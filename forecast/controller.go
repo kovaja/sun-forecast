@@ -131,7 +131,7 @@ func UpdateForecasts() error {
 				}
 				updated += 1
 			} else {
-				logger.Log("Skipping forecast updated as value is the same")
+				logger.Log("Skipping forecast updated for %d as value is the same", id)
 			}
 		} else {
 			err := createForcast(db, &forecast)

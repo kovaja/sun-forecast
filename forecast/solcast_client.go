@@ -3,6 +3,7 @@ package forecast
 import (
 	"fmt"
 	"kovaja/sun-forecast/httpClient"
+	"kovaja/sun-forecast/logger"
 	"kovaja/sun-forecast/utils"
 )
 
@@ -15,6 +16,7 @@ func getUrl() (string, error) {
 
 func fetchForecasts() (*SolcastApiForcastResponse, error) {
 	apiKey, err := utils.GetEnvVariable("SOLCAST_API_KEY")
+	dev, err := utils.GetEnvVariable("DEV")
 
 	url, err := getUrl()
 	if err != nil {
@@ -25,7 +27,16 @@ func fetchForecasts() (*SolcastApiForcastResponse, error) {
 	err = httpClient.GetJsonWithAuth(url, apiKey, &body)
 
 	if err != nil {
-		return nil, utils.CustomError("Failed to call solcast api", err)
+		if dev == "1" {
+			logger.Log("Call to solcast api failed in dev, using mock data, %v", err)
+
+			err = utils.ReadJson("./forecast/mock.json", &body)
+			if err != nil {
+				return nil, utils.CustomError("Failed to read mock data", err)
+			}
+		} else {
+			return nil, utils.CustomError("Failed to call solcast api", err)
+		}
 	}
 
 	return &body, nil
