@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"fmt"
+	"kovaja/sun-forecast/logger"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -11,7 +11,7 @@ func GetEnvVariable(key string) (string, error) {
 	err := godotenv.Load(".env")
 
 	if err != nil {
-		fmt.Printf("Failed to load env file, %v\n", err)
+		logger.LogError("Failed to load env file", err)
 		return "", err
 	}
 

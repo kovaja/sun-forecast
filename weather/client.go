@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"kovaja/sun-forecast/httpClient"
+	"kovaja/sun-forecast/logger"
 	"kovaja/sun-forecast/utils"
 )
 
@@ -49,7 +50,8 @@ func getWeatherData(path string) (*WeatherResponse, error) {
 	err = httpClient.GetJson(url, &body)
 
 	if err != nil {
-		fmt.Printf("Failed to call %s api %v. Response: %v\n", path, err, body)
+		errorMsg := fmt.Sprintf("Failed to call %s, response: %v", path, body)
+		logger.LogError(errorMsg, err)
 		return nil, errors.New("Failed to call weather api")
 	}
 

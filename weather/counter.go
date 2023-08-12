@@ -1,7 +1,7 @@
 package weather
 
 import (
-	"fmt"
+	"kovaja/sun-forecast/logger"
 	"kovaja/sun-forecast/utils"
 	"time"
 )
@@ -15,7 +15,7 @@ func CanCall() (bool, int) {
 	remainingCalls, err := getRemainingCalls()
 
 	if err != nil {
-		fmt.Printf("Failed to read remaining calls: %v\n", err)
+		logger.LogError("Failed to read remaining calls", err)
 		return false, 0
 	}
 
@@ -25,10 +25,9 @@ func CanCall() (bool, int) {
 		err := setRemainigCalls(newRemainingCalls)
 
 		if err != nil {
-			fmt.Printf("Failed to write remaining calls: %v\n", err)
+			logger.LogError("Failed to write remaining calls", err)
 			return false, 0
 		}
-
 	}
 
 	return canCall, newRemainingCalls
@@ -46,7 +45,7 @@ func getRemainingCalls() (int, error) {
 
 	if !exists {
 		addCurrentDay()
-		fmt.Printf("Add new day for remaining calls\n")
+		logger.Log("Add new day for remaining calls")
 		return MAX_CALLS, nil
 	}
 
@@ -71,7 +70,7 @@ func setRemainigCalls(remainingCalls int) error {
 
 	todayKey := getToday()
 	data[todayKey] = remainingCalls
-	fmt.Printf("Setting remaining calls for %s as %d\n", todayKey, remainingCalls)
+	logger.Log("Setting remaining calls for %s as %d", todayKey, remainingCalls)
 
 	return utils.WriteJson(CALLS_FILE, data)
 }
