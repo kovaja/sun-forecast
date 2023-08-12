@@ -26,22 +26,21 @@ func getParams() (string, error) {
 	return utils.ReturnStringResultOrError(params, err)
 }
 
-func getUrl() (string, error) {
+func getUrl(path string) (string, error) {
 	// https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={API key}
-	path := "weather"
 	params, err := getParams()
 	url := fmt.Sprintf("https://api.openweathermap.org/data/2.5/%s?%s", path, params)
 
 	return utils.ReturnStringResultOrError(url, err)
 }
 
-func GetFourDays() (*WeatherResponse, error) {
+func getWeatherData(path string) (*WeatherResponse, error) {
 	canCall, remainingCalls := CanCall()
 	if !canCall {
 		return nil, errors.New("Cannot call weather api")
 	}
 
-	url, err := getUrl()
+	url, err := getUrl(path)
 	if err != nil {
 		return nil, errors.New("Failed to build weather api url")
 	}
@@ -50,7 +49,7 @@ func GetFourDays() (*WeatherResponse, error) {
 	err = httpClient.GetJson(url, &body)
 
 	if err != nil {
-		fmt.Printf("Failed to call weather api %v. Response: %v\n", err, body)
+		fmt.Printf("Failed to call %s api %v. Response: %v\n", path, err, body)
 		return nil, errors.New("Failed to call weather api")
 	}
 
@@ -60,4 +59,14 @@ func GetFourDays() (*WeatherResponse, error) {
 	}
 
 	return r, nil
+}
+
+func GetCurrentWeather() (*WeatherResponse, error) {
+	path := "weather"
+	return getWeatherData(path)
+}
+
+func GetForecast() (*WeatherResponse, error) {
+	path := "forecast"
+	return getWeatherData(path)
 }
