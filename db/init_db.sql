@@ -2,3 +2,16 @@ CREATE TABLE IF NOT EXISTS remaining_calls (
     date VARCHAR(255) PRIMARY KEY,
     remaining INT
 );
+
+CREATE TABLE if NOT EXISTS forecasts (
+    id SERIAL PRIMARY KEY,
+    period_end TIMESTAMP WITH TIME ZONE NOT NULL,
+    value NUMERIC NOT NULL,
+    actual NUMERIC
+);
+
+CREATE TABLE IF NOT EXISTS events (
+    id SERIAL PRIMARY KEY,
+    timestamp TIMESTAMP WITH TIME ZONE DEFAULT current_timestamp,
+    message TEXT NOT NULL
+);
