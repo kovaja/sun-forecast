@@ -1,4 +1,4 @@
-package weather
+package solcast
 
 import (
 	"database/sql"
@@ -10,7 +10,6 @@ import (
 type RemainingCalls map[string]int
 
 const MAX_CALLS = 1000
-const CALLS_FILE = "./tmp/remaining-calls.json"
 
 func CanCall() (bool, int) {
 	remainingCalls, err := getRemainingCalls()

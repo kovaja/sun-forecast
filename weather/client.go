@@ -36,7 +36,8 @@ func getUrl(path string) (string, error) {
 }
 
 func getWeatherData(path string) (*WeatherResponse, error) {
-	canCall, remainingCalls := CanCall()
+	canCall := true
+	remainingCalls := 0
 	if !canCall {
 		return nil, errors.New("Cannot call weather api")
 	}

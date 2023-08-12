@@ -2,6 +2,7 @@ package main
 
 import (
 	"kovaja/sun-forecast/api"
+	"kovaja/sun-forecast/solcast"
 	"kovaja/sun-forecast/weather"
 	"net/http"
 )
@@ -21,14 +22,20 @@ func currentWeatherHandler(w http.ResponseWriter, r *http.Request) {
 	api.SendResponse(w, data, err)
 }
 
-func forceastHandler(w http.ResponseWriter, r *http.Request) {
+func weatherForcastHandler(w http.ResponseWriter, r *http.Request) {
 	data, err := weather.GetForecast()
+	api.SendResponse(w, data, err)
+}
+
+func forecastHandler(w http.ResponseWriter, r *http.Request) {
+	data, err := solcast.ReadForecastsFromApi()
 	api.SendResponse(w, data, err)
 }
 
 func InitializeServer() error {
 	http.HandleFunc(DEFAULT_API_PATH+"weather/", currentWeatherHandler)
-	http.HandleFunc(DEFAULT_API_PATH+"forecast/", forceastHandler)
+	http.HandleFunc(DEFAULT_API_PATH+"weather/forecast/", weatherForcastHandler)
+	http.HandleFunc(DEFAULT_API_PATH+"forecast/", forecastHandler)
 	http.HandleFunc(DEFAULT_API_PATH, defaultApiHandler)
 	http.HandleFunc("/", defaultPathHandler)
 
