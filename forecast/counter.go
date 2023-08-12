@@ -1,4 +1,4 @@
-package solcast
+package forecast
 
 import (
 	"database/sql"

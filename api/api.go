@@ -30,16 +30,16 @@ func sendJson(w http.ResponseWriter, responseData Response, err error) {
 	json.NewEncoder(w).Encode(responseData)
 }
 
-func getResponse(data any, err error) (Response, error) {
+func getResponse(data any) Response {
 	response := make(Response)
 
 	response["date"] = time.Now().UTC().Format("2006-01-02T15:04:05.000Z")
 	response["data"] = data
 
-	return response, err
+	return response
 }
 
 func SendResponse(w http.ResponseWriter, data any, err error) {
-	response, err := getResponse(data, err)
+	response := getResponse(data)
 	sendJson(w, response, err)
 }
