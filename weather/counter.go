@@ -1,8 +1,9 @@
 package weather
 
 import (
+	"database/sql"
+	"kovaja/sun-forecast/db"
 	"kovaja/sun-forecast/logger"
-	"kovaja/sun-forecast/utils"
 	"time"
 )
 
@@ -34,26 +35,25 @@ func CanCall() (bool, int) {
 }
 
 func getRemainingCalls() (int, error) {
-	var data RemainingCalls
-	err := utils.ReadJson(CALLS_FILE, &data)
-	if err != nil {
-		return 0, err
-	}
-
 	todayKey := getToday()
-	remainingCalls, exists := data[todayKey]
+	db := db.GetDb()
 
-	if !exists {
-		addCurrentDay()
-		logger.Log("Add new day for remaining calls")
-		return MAX_CALLS, nil
+	var remaining int
+	err := db.QueryRow("SELECT remaining FROM remaining_calls WHERE date = $1", todayKey).Scan(&remaining)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			// this means that we don't have that day yet, so return MAX_CALLS
+			// we will write it later on
+			logger.Log("No record found for %s, returning MAX_CALLS", todayKey)
+			remaining = MAX_CALLS
+		} else {
+			return 0, err
+		}
 	}
 
-	return remainingCalls, nil
-}
-
-func addCurrentDay() error {
-	return setRemainigCalls(MAX_CALLS)
+	logger.Log("Read remaining for %s from DB: %d", todayKey, remaining)
+	return remaining, nil
 }
 
 func getToday() string {
@@ -62,15 +62,15 @@ func getToday() string {
 }
 
 func setRemainigCalls(remainingCalls int) error {
-	var data RemainingCalls
-	err := utils.ReadJson(CALLS_FILE, &data)
-	if err != nil {
-		return err
-	}
-
 	todayKey := getToday()
-	data[todayKey] = remainingCalls
-	logger.Log("Setting remaining calls for %s as %d", todayKey, remainingCalls)
+	db := db.GetDb()
+	query := `
+    INSERT INTO remaining_calls (date, remaining)
+    VALUES ($1, $2)
+    ON CONFLICT (date) DO UPDATE SET remaining = EXCLUDED.remaining
+  `
+	_, err := db.Exec(query, todayKey, remainingCalls)
 
-	return utils.WriteJson(CALLS_FILE, data)
+	logger.Log("Setting remaining calls for %s as %d", todayKey, remainingCalls)
+	return err
 }
