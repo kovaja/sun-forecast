@@ -60,21 +60,22 @@ func readForecastsFromApi() (*ForecastResponse, error) {
 	return &response, nil
 }
 
-func isExistingForecast(db *sql.DB, timestamp time.Time) (bool, int) {
-	query := "SELECT id FROM forecasts WHERE period_end = $1"
+func isExistingForecast(db *sql.DB, timestamp time.Time) (bool, int, float64) {
+	query := "SELECT id, value FROM forecasts WHERE period_end = $1"
 	var id int
-	err := db.QueryRow(query, timestamp).Scan(&id)
+	var value float64
+	err := db.QueryRow(query, timestamp).Scan(&id, &value)
 	if err == sql.ErrNoRows {
-		return false, -1
+		return false, -1, -1
 	} else if err != nil {
 		logger.LogError("Failed to check forcast record", err)
 
 		// returning false to prevent duplicate records in the DB
 		// rather not store anything that have multiple records for same timestamp
-		return false, -1
+		return false, -1, -1
 	}
 
-	return true, id
+	return true, id, value
 }
 
 func updateForcastValue(db *sql.DB, id int, value float64) error {
@@ -120,14 +121,18 @@ func UpdateForecasts() error {
 	updated := 0
 
 	for _, forecast := range data.Forecasts {
-		isExisting, id := isExistingForecast(db, forecast.PeriodEnd)
+		isExisting, id, value := isExistingForecast(db, forecast.PeriodEnd)
 
 		if isExisting {
-			err := updateForcastValue(db, id, forecast.Value)
-			if err != nil {
-				return err
+			if value != forecast.Value {
+				err := updateForcastValue(db, id, forecast.Value)
+				if err != nil {
+					return err
+				}
+				updated += 1
+			} else {
+				logger.Log("Skipping forecast updated as value is the same")
 			}
-			updated += 1
 		} else {
 			err := createForcast(db, &forecast)
 			if err != nil {
