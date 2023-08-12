@@ -7,6 +7,7 @@ import (
 	"kovaja/sun-forecast/db"
 	"kovaja/sun-forecast/events"
 	"kovaja/sun-forecast/logger"
+	"kovaja/sun-forecast/utils"
 	"time"
 )
 
@@ -81,14 +82,14 @@ func updateForcastValue(db *sql.DB, id int, value float64) error {
 	result, err := db.Exec(query, value, id)
 
 	if err != nil {
-		errorMsg := fmt.Sprintf("Failed to update forecast %d. Error: %v", id, err)
-		return errors.New(errorMsg)
+		errorMsg := fmt.Sprintf("Failed to update forecast %d.", id)
+		return utils.CustomError(errorMsg, err)
 	}
 
 	rowsAffected, err := result.RowsAffected()
 	if err != nil {
-		errorMsg := fmt.Sprintf("Failed to check affected rows for forecast %d. Error: %v", id, err)
-		return errors.New(errorMsg)
+		errorMsg := fmt.Sprintf("Failed to check affected rows/ for forecast %d", id)
+		return utils.CustomError(errorMsg, err)
 	}
 
 	logger.Log("Updated forecast value %d, rowsAffected: %d", id, rowsAffected)
@@ -101,7 +102,7 @@ func createForcast(db *sql.DB, forecast *Forecast) error {
 	_, err := db.Exec(query, forecast.PeriodEnd, forecast.Value)
 	if err != nil {
 		errorMsg := fmt.Sprintf("Failed to insert forecast %v. Error: %v", forecast, err)
-		return errors.New(errorMsg)
+		return utils.CustomError(errorMsg, err)
 	}
 
 	logger.Log("Created forecast for %s", forecast.PeriodEnd)
@@ -146,8 +147,7 @@ func ReadForecastsFromDb() (*[]Forecast, error) {
 
 	rows, err := db.Query(query)
 	if err != nil {
-		logger.LogError("Failed to read forecasts", err)
-		return nil, errors.New("Failed to read forecasts")
+		return nil, utils.CustomError("Failed to read singe forecast", err)
 	}
 	defer rows.Close()
 
@@ -156,8 +156,7 @@ func ReadForecastsFromDb() (*[]Forecast, error) {
 		var forecast Forecast
 		err := rows.Scan(&forecast.Id, &forecast.PeriodEnd, &forecast.Value, &forecast.Actual)
 		if err != nil {
-			logger.LogError("Failed to read singe forecast", err)
-			return nil, errors.New("Failed to read forecasts")
+			return nil, utils.CustomError("Failed to read singe forecast", err)
 		}
 
 		forecasts = append(forecasts, forecast)

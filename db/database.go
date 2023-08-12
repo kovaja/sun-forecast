@@ -2,7 +2,6 @@ package db
 
 import (
 	"database/sql"
-	"errors"
 	"fmt"
 	"kovaja/sun-forecast/logger"
 	"kovaja/sun-forecast/utils"
@@ -19,7 +18,7 @@ func getDbConnectionString() (string, error) {
 	dbName, err := utils.GetEnvVariable("DB_NAME")
 
 	if err != nil {
-		return "", errors.New("Failed to load env variables for DB")
+		return "", utils.CustomError("Failed to load env variables for DB", err)
 	}
 
 	return fmt.Sprintf("postgres://%s:%s@%s/%s", usr, pwd, dbHost, dbName), nil

@@ -2,6 +2,8 @@ package utils
 
 import (
 	"encoding/json"
+	"errors"
+	"kovaja/sun-forecast/logger"
 	"os"
 )
 
@@ -36,4 +38,9 @@ func ReturnStringResultOrError(str string, err error) (string, error) {
 	}
 
 	return str, nil
+}
+
+func CustomError(str string, err error) error {
+	logger.LogError(str, err)
+	return errors.New(str)
 }
