@@ -171,7 +171,7 @@ func ConsumeForecasts() error {
 
 func ReadForecastsFromDb() (*[]Forecast, error) {
 	db := db.GetDb()
-	query := "SELECT id, period_end, value, actual FROM forecasts"
+	query := "SELECT id, period_end, value, actual FROM forecasts ORDER BY period_end ASC"
 
 	rows, err := db.Query(query)
 	if err != nil {
