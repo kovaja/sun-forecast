@@ -2,12 +2,14 @@ package forecast
 
 import (
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"kovaja/sun-forecast/db"
 	"kovaja/sun-forecast/events"
 	"kovaja/sun-forecast/logger"
 	"kovaja/sun-forecast/utils"
+	"net/http"
 	"time"
 )
 
@@ -97,6 +99,25 @@ func updateForcastValue(db *sql.DB, id int, value float64) error {
 	return nil
 }
 
+func updateForcastActual(db *sql.DB, periodEnd time.Time, actual float64) error {
+	query := "UPDATE forecasts SET actual = $1 WHERE period_end = $2"
+	result, err := db.Exec(query, actual, periodEnd)
+
+	if err != nil {
+		errorMsg := fmt.Sprintf("Failed to update forecast %v.", periodEnd)
+		return utils.CustomError(errorMsg, err)
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		errorMsg := fmt.Sprintf("Failed to check affected rows/ for forecast %v", periodEnd)
+		return utils.CustomError(errorMsg, err)
+	}
+
+	logger.Log("Updated forecast actual %v, rowsAffected: %d", periodEnd, rowsAffected)
+	return nil
+}
+
 func createForcast(db *sql.DB, forecast *Forecast) error {
 	query := "INSERT INTO forecasts (period_end, value) VALUES ($1, $2)"
 
@@ -110,7 +131,7 @@ func createForcast(db *sql.DB, forecast *Forecast) error {
 	return nil
 }
 
-func UpdateForecasts() error {
+func ConsumeForecasts() error {
 	data, err := readForecastsFromApi()
 	if err != nil {
 		return err
@@ -144,7 +165,7 @@ func UpdateForecasts() error {
 		}
 	}
 
-	events.LogEvent("Updated events, %d added, %d updated, %d skipped", added, updated, skipped)
+	events.LogEvent("Updated forecasts, %d added, %d updated, %d skipped", added, updated, skipped)
 	return nil
 }
 
@@ -170,4 +191,34 @@ func ReadForecastsFromDb() (*[]Forecast, error) {
 	}
 
 	return &forecasts, nil
+}
+
+func UpdateForecasts(r *http.Request) ([]ForecastUpdate, error) {
+	var data [][]HaHistoryRecord
+	err := json.NewDecoder(r.Body).Decode(&data)
+	if err != nil {
+		return nil, utils.CustomError("Failed to decode data for forecast update", err)
+	}
+
+	if len(data) == 0 || len(data) > 1 {
+		return nil, errors.New(fmt.Sprintf("Unexpected length of first data array: %d", len(data)))
+	}
+
+	records := data[0]
+	logger.Log("Received update data %d", len(records))
+
+	updates := ComputeUpdates(records)
+	db := db.GetDb()
+	updated := 0
+
+	for _, update := range updates {
+		err := updateForcastActual(db, update.PeriodEnd, update.Actual)
+		if err != nil {
+			return nil, err
+		}
+		updated += 1
+	}
+
+	events.LogEvent("Updated forecasts with actual values, %d updated", updated)
+	return updates, nil
 }

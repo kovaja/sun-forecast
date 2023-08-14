@@ -25,3 +25,13 @@ type ForecastResponse struct {
 	RemainingCalls int        `json:"remainingCalls"`
 	Forecasts      []Forecast `json:"forecasts"`
 }
+
+type HaHistoryRecord struct {
+	LastChanged time.Time `json:"last_changed"`
+	State       string    `json:"state"`
+}
+
+type ForecastUpdate struct {
+	PeriodEnd time.Time
+	Actual    float64
+}

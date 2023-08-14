@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"kovaja/sun-forecast/api"
 	"kovaja/sun-forecast/forecast"
 	"kovaja/sun-forecast/logger"
@@ -35,13 +36,22 @@ func forecastHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func consumeForecastHandler(w http.ResponseWriter, r *http.Request) {
-	err := forecast.UpdateForecasts()
+	err := forecast.ConsumeForecasts()
 	api.SendResponse(w, nil, err)
 }
 
 func updateForecastHandler(w http.ResponseWriter, r *http.Request) {
-	logger.Log("Update forecast api called")
-	api.SendResponse(w, nil, nil)
+	logger.Log("Update forecast api called %s", r.Method)
+
+	var err error
+	if r.Method == http.MethodPost {
+		updates, err := forecast.UpdateForecasts(r)
+		api.SendResponse(w, updates, err)
+	} else {
+		err = errors.New("Method not allowed")
+		api.SendError(w, err, http.StatusMethodNotAllowed)
+	}
+
 }
 
 func InitializeServer() error {

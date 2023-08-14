@@ -11,11 +11,16 @@ type ErrorResponse struct {
 	Error string `json:"error"`
 }
 
-func sendJson(w http.ResponseWriter, responseData Response, err error) {
+func sendJson(w http.ResponseWriter, responseData Response, err error, status *int) {
 	w.Header().Set("Content-Type", "application/json")
 
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
+		finalStatus := http.StatusBadRequest
+		if status != nil {
+			finalStatus = *status
+		}
+		w.WriteHeader(finalStatus)
+
 		errorRespone := ErrorResponse{Error: err.Error()}
 		errorResponseJson, err := json.Marshal(errorRespone)
 		if err != nil {
@@ -41,5 +46,9 @@ func getResponse(data any) Response {
 
 func SendResponse(w http.ResponseWriter, data any, err error) {
 	response := getResponse(data)
-	sendJson(w, response, err)
+	sendJson(w, response, err, nil)
+}
+
+func SendError(w http.ResponseWriter, err error, status int) {
+	sendJson(w, nil, err, &status)
 }
