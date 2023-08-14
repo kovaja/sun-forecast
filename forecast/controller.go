@@ -119,6 +119,7 @@ func UpdateForecasts() error {
 	db := db.GetDb()
 	added := 0
 	updated := 0
+	skipped := 0
 
 	for _, forecast := range data.Forecasts {
 		isExisting, id, value := isExistingForecast(db, forecast.PeriodEnd)
@@ -131,6 +132,7 @@ func UpdateForecasts() error {
 				}
 				updated += 1
 			} else {
+				skipped += 1
 				logger.Log("Skipping forecast updated for %d as value is the same", id)
 			}
 		} else {
@@ -142,7 +144,7 @@ func UpdateForecasts() error {
 		}
 	}
 
-	events.LogEvent("Updated events, %d added, %d updated", added, updated)
+	events.LogEvent("Updated events, %d added, %d updated, %d skipped", added, updated, skipped)
 	return nil
 }
 
