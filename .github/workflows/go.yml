@@ -36,6 +36,9 @@ jobs:
         service_account: '${{ secrets.WIF_SERVICE_ACCOUNT }}'
         project_id: 'sun-forecast'
 
+    - name: "Install app-engine-go"
+      run: gcloud components install app-engine-go
+
     - name: 'Google deploy'
       id: 'deploy'
       uses: 'google-github-actions/deploy-appengine@v1'
