@@ -1,0 +1,12 @@
+runtime: go
+env: flex
+
+runtime_config:
+  operating_system: "ubuntu22"
+
+manual_scaling:
+  instances: 1
+
+handlers:
+  - url: /.*
+    script: auto
