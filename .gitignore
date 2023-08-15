@@ -1,7 +1,6 @@
 **.exe
 .vscode/
 *.vscode//vendor/
-/go.sum
 
 # Environment-specific files
 .env
