@@ -23,7 +23,7 @@ jobs:
         go-version: '1.20'
 
     - name: Build
-      run: go build -o sun-forecast ./...
+      run: go build -o sun-forecast ./main.go
 
     # - name: Test
       # run: go test -v ./...
