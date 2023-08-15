@@ -27,6 +27,8 @@ jobs:
 
     # - name: Test
       # run: go test -v ./...
+    - name: "Install app-engine-go"
+      run:  sudo apt-get update && sudo apt-get install google-cloud-sdk-app-engine-go
 
     - name: 'Google auth'
       id: 'auth'
@@ -35,9 +37,6 @@ jobs:
         workload_identity_provider: '${{ secrets.WIF_PROVIDER }}'
         service_account: '${{ secrets.WIF_SERVICE_ACCOUNT }}'
         project_id: 'sun-forecast'
-
-    - name: "Install app-engine-go"
-      run: sudo yum install google-cloud-sdk-app-engine-g
 
     - name: 'Google deploy'
       id: 'deploy'
