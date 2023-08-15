@@ -37,7 +37,7 @@ jobs:
         project_id: 'sun-forecast'
 
     - name: "Install app-engine-go"
-      run: gcloud components install app-engine-go
+      run: sudo apt-get install google-cloud-sdk-app-engine-go
 
     - name: 'Google deploy'
       id: 'deploy'
