@@ -3,6 +3,9 @@
 
 name: Go
 
+env:
+  ACTIONS_RUNNER_DEBUG: true
+
 on:
   push:
     branches: [ "master" ]
