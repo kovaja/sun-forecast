@@ -27,9 +27,6 @@ jobs:
 
     # - name: Test
       # run: go test -v ./...
-    - name: "Install app-engine-go"
-      # https://cloud.google.com/sdk/docs/components#external_package_managers
-      run: sudo apt-get install google-cloud-cli-app-engine-go
 
     - name: 'Google auth'
       id: 'auth'
@@ -38,6 +35,10 @@ jobs:
         workload_identity_provider: '${{ secrets.WIF_PROVIDER }}'
         service_account: '${{ secrets.WIF_SERVICE_ACCOUNT }}'
         project_id: 'sun-forecast'
+
+    - name: "Install app-engine-go"
+      # https://cloud.google.com/sdk/docs/components#external_package_managers
+      run: sudo apt-get install google-cloud-cli-app-engine-go
 
     - name: 'Google deploy'
       id: 'deploy'
