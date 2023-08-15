@@ -37,7 +37,7 @@ jobs:
         project_id: 'sun-forecast'
 
     - name: "Install app-engine-go"
-      run: sudo apt-get install google-cloud-sdk-app-engine-go
+      run: sudo yum install google-cloud-sdk-app-engine-g
 
     - name: 'Google deploy'
       id: 'deploy'
