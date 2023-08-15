@@ -28,7 +28,8 @@ jobs:
     # - name: Test
       # run: go test -v ./...
     - name: "Install app-engine-go"
-      run:  sudo apt-get update && sudo apt-get install google-cloud-sdk-app-engine-go
+      # https://cloud.google.com/sdk/docs/components#external_package_managers
+      run: sudo apt-get install google-cloud-cli-app-engine-go
 
     - name: 'Google auth'
       id: 'auth'
