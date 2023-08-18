@@ -40,6 +40,8 @@ jobs:
       # https://cloud.google.com/sdk/docs/components#external_package_managers
       # https://cloud.google.com/sdk/docs/install#deb
 
+      # sudo apt upgrade && \
+
 
       run: |
         sudo apt-get update && \
@@ -58,10 +60,13 @@ jobs:
         echo "----->magic step 3 done" && \
         sudo swapon /var/swap && \
         echo "----->magic step 4 done" && \
-        sudo apt upgrade && \
         echo "----->magic done" && \
         sudo apt-get update && \
         echo "----->Update done for second time" && \
+        sudo rm /usr/share/keyrings/cloud.google.gpg && \
+        sudo rm /usr/share/keyrings/cloud.google.gpg~ && \
+        sudo rm /etc/apt/sources.list.d/google-cloud-sdk.list && \
+        echo "----->removal done" && \
         sudo apt-get install google-cloud-cli-app-engine-go
 
     - name: 'Google deploy'
