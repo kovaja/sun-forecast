@@ -9,7 +9,7 @@ import (
 
 type RemainingCalls map[string]int
 
-const MAX_CALLS = 5
+const MAX_CALLS = 8
 
 func CanCall() (bool, int) {
 	remainingCalls, err := getRemainingCalls()
