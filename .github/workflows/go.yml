@@ -63,8 +63,6 @@ jobs:
         echo "----->magic done" && \
         sudo apt-get update && \
         echo "----->Update done for second time" && \
-        sudo rm /usr/share/keyrings/cloud.google.gpg && \
-        sudo rm /usr/share/keyrings/cloud.google.gpg~ && \
         sudo rm /etc/apt/sources.list.d/google-cloud-sdk.list && \
         echo "----->removal done" && \
         sudo apt-get install google-cloud-cli-app-engine-go
