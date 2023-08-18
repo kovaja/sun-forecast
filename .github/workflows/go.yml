@@ -49,7 +49,7 @@ jobs:
         echo "----->Cloud SDK done" && \
         curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add - && \
         echo "----->apt-key done" && \
-        sudo apt-get update && sudo apt update && \
+        sudo sudo apt update && apt-get update && \
         echo "----->Update done for second time" && \
         sudo apt-get install google-cloud-cli-app-engine-go
 
