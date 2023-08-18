@@ -38,7 +38,7 @@ jobs:
 
     - name: "Install app-engine-go"
       # https://cloud.google.com/sdk/docs/components#external_package_managers
-      # sudo apt-get update && \
+
       run: |
         sudo apt-get update && \
         echo "----->Update done" && \
@@ -48,6 +48,7 @@ jobs:
         echo "----->Cloud SDK done" && \
         curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo tee /usr/share/keyrings/cloud.google.gpg && \
         echo "----->apt-key done" && \
+        sudo apt-get update && \
         echo "----->Update done" && \
         sudo apt-get install google-cloud-cli-app-engine-go
 
