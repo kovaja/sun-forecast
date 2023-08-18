@@ -81,7 +81,7 @@ func ComputeUpdates(records []HaHistoryRecord) []ForecastUpdate {
 	// logger.Log("Adding update for %v, len: %d, sum %.2f, avg: %.2f", currentPeriodEnd, periodLen, periodSum, periodSum/float64(periodLen))
 	updates = append(updates, ForecastUpdate{PeriodEnd: *currentPeriodEnd, Actual: periodSum / float64(periodLen)})
 
-	logger.Log("Computed updated: %v", updates)
+	logger.Log("Computed updates for %d periods", len(updates))
 
 	return updates
 }

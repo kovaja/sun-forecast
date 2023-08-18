@@ -219,6 +219,6 @@ func UpdateForecasts(r *http.Request) ([]ForecastUpdate, error) {
 		updated += 1
 	}
 
-	events.LogEvent("Updated forecasts with actual values, %d updated", updated)
+	logger.Log("Updated forecasts with actual values, %d updated", updated)
 	return updates, nil
 }
