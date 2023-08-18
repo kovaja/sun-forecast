@@ -40,10 +40,16 @@ jobs:
       # https://cloud.google.com/sdk/docs/components#external_package_managers
       run: |
         sudo apt-get update && \
+        echo "Update done" && \
         sudo apt-get install apt-transport-https ca-certificates gnupg curl sudo && \
+        echo "Install done" && \
         echo "deb https://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && \
+        echo "Cloud SDK done" && \
         curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo tee /usr/share/keyrings/cloud.google.gpg && \
-        sudo apt-get update && sudo apt-get install google-cloud-cli-app-engine-go
+        echo "apt-key done" && \
+        sudo apt-get update && \
+        echo "Update done" && \
+        sudo apt-get install google-cloud-cli-app-engine-go
 
     - name: 'Google deploy'
       id: 'deploy'
