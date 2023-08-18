@@ -40,6 +40,16 @@ jobs:
       # https://cloud.google.com/sdk/docs/components#external_package_managers
       # https://cloud.google.com/sdk/docs/install#deb
 
+# sudo dd if=/dev/zero of=/var/swap bs=2048 count=524288 && \
+#         echo "----->magic step 1 done" && \
+#         sudo chmod 600 /var/swap && \
+#         echo "----->magic step 2 done" && \
+#         sudo mkswap /var/swap && \
+#         echo "----->magic step 3 done" && \
+#         sudo swapon /var/swap && \
+#         echo "----->magic step 4 done" && \
+#         sudo apt upgrade && \
+#         echo "----->magic done" && \
       run: |
         sudo apt-get update && \
         echo "----->Update done" && \
@@ -49,7 +59,7 @@ jobs:
         echo "----->Cloud SDK done" && \
         curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add - && \
         echo "----->apt-key done" && \
-        sudo sudo apt update && apt-get update && \
+        sudo apt update && sudo apt-get update && \
         echo "----->Update done for second time" && \
         sudo apt-get install google-cloud-cli-app-engine-go
 
