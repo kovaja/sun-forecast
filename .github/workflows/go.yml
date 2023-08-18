@@ -63,6 +63,8 @@ jobs:
         echo "----->magic done" && \
         sudo apt-get update && \
         echo "----->Update done for second time" && \
+        sudo apt-get remove google-cloud-sdk && \
+        echo "----->Removal of sdk done" && \
         sudo apt-get install google-cloud-cli && \
         echo "----->Install gc-cli done" && \
         sudo apt-get install google-cloud-sdk-app-engine-go
