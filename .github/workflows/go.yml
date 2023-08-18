@@ -38,6 +38,7 @@ jobs:
 
     - name: "Install app-engine-go"
       # https://cloud.google.com/sdk/docs/components#external_package_managers
+      # https://cloud.google.com/sdk/docs/install#deb
 
       run: |
         sudo apt-get update && \
@@ -46,7 +47,7 @@ jobs:
         echo "----->Install done" && \
         echo "deb https://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && \
         echo "----->Cloud SDK done" && \
-        curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key --keyring /usr/share/keyrings/cloud.google.gpg add - \
+        curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key --keyring /usr/share/keyrings/cloud.google.gpg add - && \
         echo "----->apt-key done" && \
         sudo apt-get update && \
         echo "----->Update done" && \
