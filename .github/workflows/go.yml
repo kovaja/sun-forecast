@@ -63,7 +63,7 @@ jobs:
         echo "----->magic done" && \
         sudo apt-get update && \
         echo "----->Update done for second time" && \
-        sudo apt-get install google-cloud-cli-app-engine-go
+        sudo apt-get install google-cloud-sdk-app-engine-go
 
     - name: 'Google deploy'
       id: 'deploy'
