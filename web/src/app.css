@@ -3,7 +3,8 @@
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: light dark;
+  color: #4C4C6D;
+  background-color: #E8F6EF;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -11,3 +12,35 @@
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
 }
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+a, a:visited {
+  color: #4C4C6D;
+  text-decoration: none;
+  transition: box-shadow .3s;
+}
+a:hover {
+  box-shadow: 0 0 11px rgba(33,33,33,.2);
+}
+
+/*I have to put it between global styles*/
+/*because Svelte is bonkers*/
+/*and it does not let you styile routing links*/
+nav a {
+  flex: 1;
+  border-left: 3px solid #FFE194;
+  padding: 10px;
+}
+
+nav a[aria-current="page"] {
+  border-bottom: 3px solid #FFE194;
+}
+
+/**
+#B8DFD8 nav
+#FFE194 boxes?s
+ */

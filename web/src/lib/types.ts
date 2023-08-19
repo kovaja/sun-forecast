@@ -8,3 +8,8 @@ export interface AppEvent {
     message: string;
     timestamp: string;
 }
+
+export interface AppLink {
+    route: string;
+    name: string;
+}

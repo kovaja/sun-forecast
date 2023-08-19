@@ -1,9 +1,32 @@
 <script lang="ts">
+    import { Router, Link, Route } from "svelte-routing";
     import Events from './routes/Events.svelte';
+    import Forecast from './routes/Forecast.svelte';
+    import type { AppLink } from './lib/types';
+    import Tabs from './lib/components/Tabs.svelte';
+
+    const links: AppLink[] = [
+        {
+            name: 'Forecast',
+            route: '/'
+        },
+        {
+            name: 'Events',
+            route: '/events'
+        }
+    ]
+
+    let url = "/";
 </script>
 
 <main>
-    <Events/>
+    <Router {url}>
+        <Tabs links={links} />
+        <div>
+            <Route path="/events" component={Events} />
+            <Route path="/"><Forecast /></Route>
+        </div>
+    </Router>
 </main>
 
 <style>
