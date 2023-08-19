@@ -8,7 +8,7 @@ export function fetchForecast(): Promise<Forecast[] | null> {
     const nowTs = new Date().getTime()
     const params = {
         from: new Date(nowTs - MS_3_HOURS).toISOString(),
-        to: new Date(nowTs+MS_6_HOURS).toISOString()
+        to: new Date(nowTs + MS_6_HOURS).toISOString()
     }
     return fetchJsonData<Forecast[]>('forecast', params)
 }
