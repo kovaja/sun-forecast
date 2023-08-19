@@ -42,9 +42,6 @@ func consumeForecastHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func updateForecastHandler(w http.ResponseWriter, r *http.Request) {
-	// logger.Log("Update forecast api called %s | %s | %s | %s | %v", r.Method, r.URL, r.RequestURI, r.RemoteAddr, r.TLS)
-	logger.Log("Update forecast api called %v", r)
-
 	var err error
 	if r.Method == http.MethodPost {
 		updates, err := forecast.UpdateForecasts(r)
