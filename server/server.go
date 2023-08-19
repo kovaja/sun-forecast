@@ -5,6 +5,7 @@ import (
 	"kovaja/sun-forecast/api"
 	"kovaja/sun-forecast/forecast"
 	"kovaja/sun-forecast/logger"
+	"kovaja/sun-forecast/utils"
 	"kovaja/sun-forecast/weather"
 	"net/http"
 )
@@ -56,6 +57,12 @@ func updateForecastHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func InitializeServer() error {
+	port, err := utils.GetEnvVariable("PORT")
+
+	if err != nil {
+		return utils.CustomError("Failed to load port env variable", err)
+	}
+
 	http.HandleFunc(DEFAULT_API_PATH+"weather/", currentWeatherHandler)
 	http.HandleFunc(DEFAULT_API_PATH+"weather/forecast/", weatherForcastHandler)
 	http.HandleFunc(DEFAULT_API_PATH+"forecast/", forecastHandler)
@@ -64,5 +71,6 @@ func InitializeServer() error {
 	http.HandleFunc(DEFAULT_API_PATH, defaultApiHandler)
 	http.HandleFunc("/", defaultPathHandler)
 
-	return http.ListenAndServe(":8080", nil)
+	logger.Log("Server will listen on port %s", (":" + port))
+	return http.ListenAndServe(":"+port, nil)
 }
