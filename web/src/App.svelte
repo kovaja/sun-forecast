@@ -22,7 +22,7 @@
 <main>
     <Router {url}>
         <Tabs links={links} />
-        <div>
+        <div class="rout-main">
             <Route path="/events" component={Events} />
             <Route path="/"><Forecast /></Route>
         </div>
@@ -30,5 +30,7 @@
 </main>
 
 <style>
-
+    .rout-main {
+        padding: 10px;
+    }
 </style>

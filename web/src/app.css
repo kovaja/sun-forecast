@@ -29,7 +29,7 @@ a:hover {
 
 /*I have to put it between global styles*/
 /*because Svelte is bonkers*/
-/*and it does not let you styile routing links*/
+/*and it does not let you style routing links*/
 nav a {
   flex: 1;
   border-left: 3px solid #FFE194;
