@@ -22,7 +22,7 @@ export function getXDomain(data: Forecast[]): Date[] {
         new Date(lastPeriod)
     ]
 }
-export function createXAxis(rightEdgeX: number, domain: Date[]) {
+export function createXScale(rightEdgeX: number, domain: Date[]) {
     return d3.scaleTime()
         .domain(domain)
         .range([0, rightEdgeX])
@@ -31,7 +31,7 @@ export function createXAxis(rightEdgeX: number, domain: Date[]) {
 export function getYDomain(data: Forecast[]): number[] {
     return [0, d3.max(data, d => d3.max([d.value, d.actual])) * DOMAIN_BLOAT]
 }
-export function createYAxis(bottomEdgeY: number, domain: number[]) {
+export function createYScale(bottomEdgeY: number, domain: number[]) {
     return d3.scaleLinear()
         .domain(domain)
         .range([bottomEdgeY, 0]);

@@ -1,18 +1,26 @@
 import type { Forecast } from '../../types';
 import * as d3 from "d3";
-import { createXAxis, getXDomain, createYAxis, getYDomain, getPeriodStart } from './domains';
+import { createXScale, getXDomain, createYScale, getYDomain, getPeriodStart } from './domains';
 import { createTooltip, getMouseLeaveHandler, getMouseOverHandler } from './tooltip';
 import { forecastSuccessRate } from './utils';
 
 export const GRAPH_ROOT = 'graph-root';
 const GRAPH_ROOT_SELECTOR = '.' + GRAPH_ROOT
-const COLUMN_PADDING = 15
+const MAX_COLUMN_PADDING = 15
+let COLUMN_PADDING = 15
 
 interface Margin {
     top: number;
     left: number;
     bottom: number;
     right: number;
+}
+
+function createColPadScale() {
+    return d3.scaleLinear()
+        .domain([10, 30])
+        .range([MAX_COLUMN_PADDING, 3])
+        .clamp(true);
 }
 
 function getContainerWidth(): number {
@@ -108,17 +116,26 @@ function appendText(svg, data, x, y) {
         .attr("font-size", "12px")
 }
 
+function throwAwayOldGraph() {
+    document.querySelector(GRAPH_ROOT_SELECTOR).innerHTML = ''
+}
+
 export function plotGraph(data: Forecast[]) {
-    const colPad = 15;
+    throwAwayOldGraph()
+
     const margin = {top: 10, left: 35, right: 5, bottom: 70};
     const width = getContainerWidth();
     const height = 600 - margin.top - margin.bottom;
     const rightEdge = width - margin.left - margin.right
     const bottomEdge = height - 50
 
+    const colPadScale = createColPadScale()
+    COLUMN_PADDING = colPadScale(data.length)
+    console.log('colpad', COLUMN_PADDING)
+
     const tooltip = createTooltip(GRAPH_ROOT_SELECTOR)
-    const x = createXAxis(rightEdge, getXDomain(data))
-    const y = createYAxis(bottomEdge, getYDomain(data))
+    const x = createXScale(rightEdge, getXDomain(data))
+    const y = createYScale(bottomEdge, getYDomain(data))
     const svg = createSvg(width, height, margin)
 
     appendXAxis(svg, bottomEdge, x)
