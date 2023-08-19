@@ -130,10 +130,6 @@
                 .style("opacity", 0)
         }
 
-
-
-
-
         svg.selectAll("mybar")
             .data(data)
             .enter()
@@ -186,10 +182,10 @@
                 return d3.min([y(d.actual ?? 0), y(d.value)]) - 10;
             })
             .text(d => {
-                if (d.value === 0) {
+                if (d.value === 0 || d.actual === null) {
                     return ""
                 }
-                return (-1*(100-((d.actual ?? 0)/d.value)*100)).toFixed(2) + '%'
+                return (-1*(100-(d.actual/d.value)*100)).toFixed(2) + '%'
             })
             .attr("fill", "red")
             .attr("font-size", "12px")
