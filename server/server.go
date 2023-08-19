@@ -13,7 +13,8 @@ import (
 const DEFAULT_API_PATH = "/api/"
 
 func defaultPathHandler(w http.ResponseWriter, r *http.Request) {
-	http.Redirect(w, r, DEFAULT_API_PATH, http.StatusMovedPermanently)
+	logger.Log("Serving index.html %s", r.URL)
+	http.ServeFile(w, r, "static/index.html")
 }
 
 func defaultApiHandler(w http.ResponseWriter, r *http.Request) {
@@ -82,6 +83,7 @@ func InitializeServer() error {
 	http.HandleFunc(DEFAULT_API_PATH+"forecast/update/", updateForecastHandler)
 	http.HandleFunc(DEFAULT_API_PATH, defaultApiHandler)
 	http.HandleFunc("/", defaultPathHandler)
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
 	logger.Log("Server will listen on port %s", (":" + port))
 	return http.ListenAndServe(":"+port, nil)
