@@ -32,7 +32,22 @@ func weatherForcastHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func forecastHandler(w http.ResponseWriter, r *http.Request) {
-	data, err := forecast.ReadForecastsFromDb()
+	fromStr := r.URL.Query().Get("from")
+	toStr := r.URL.Query().Get("to")
+
+	var err error
+	if toStr == "" {
+		err = errors.New("Missing required parameter to")
+	}
+	if fromStr == "" {
+		err = errors.New("Missing required parameter from")
+	}
+	if err != nil {
+		api.SendResponse(w, nil, err)
+		return
+	}
+
+	data, err := forecast.ReadForecastsFromDb(fromStr, toStr)
 	api.SendResponse(w, data, err)
 }
 

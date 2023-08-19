@@ -169,11 +169,39 @@ func ConsumeForecasts() error {
 	return nil
 }
 
-func ReadForecastsFromDb() (*[]Forecast, error) {
-	db := db.GetDb()
-	query := "SELECT id, period_end, value, actual FROM forecasts ORDER BY period_end ASC"
+func parseReadQuery(fromStr string, toStr string) (*time.Time, *time.Time, error) {
+	fromQueryTime, err := time.Parse(time.RFC3339, fromStr)
+	if err != nil {
+		return nil, nil, err
+	}
 
-	rows, err := db.Query(query)
+	toQueryTime, err := time.Parse(time.RFC3339, toStr)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	// from will stay the same, period_end >= from will cover that time
+	// it will be the first half an hour after requested time
+	from := fromQueryTime
+	// for 16:15 we need add 30 minutes to get 16:45, that would return 16:30 period_end
+	// then we can query period_end <= to
+	to := toQueryTime.Add(time.Minute * time.Duration(30))
+
+	return &from, &to, nil
+}
+
+func ReadForecastsFromDb(fromStr string, toStr string) (*[]Forecast, error) {
+	logger.Log("Read forecasts from DB: from %s to %s", fromStr, toStr)
+
+	from, to, err := parseReadQuery(fromStr, toStr)
+	if err != nil {
+		return nil, utils.CustomError("Failed to parse query params", err)
+	}
+
+	db := db.GetDb()
+	query := "SELECT id, period_end, value, actual FROM forecasts WHERE period_end >= $1 AND period_end <= $2 ORDER BY period_end ASC"
+
+	rows, err := db.Query(query, from, to)
 	if err != nil {
 		return nil, utils.CustomError("Failed to read singe forecast", err)
 	}
