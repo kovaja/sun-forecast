@@ -10,5 +10,10 @@ export default defineConfig({
         dir: '../static/'
       }
     }
+  },
+  server: {
+    proxy: {
+      '/api': 'http://192.168.50.236:6060'
+    }
   }
 })
