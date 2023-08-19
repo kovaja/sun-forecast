@@ -3,6 +3,7 @@ package server
 import (
 	"errors"
 	"kovaja/sun-forecast/api"
+	"kovaja/sun-forecast/events"
 	"kovaja/sun-forecast/forecast"
 	"kovaja/sun-forecast/logger"
 	"kovaja/sun-forecast/utils"
@@ -66,7 +67,11 @@ func updateForecastHandler(w http.ResponseWriter, r *http.Request) {
 		err = errors.New("Method not allowed")
 		api.SendError(w, err, http.StatusMethodNotAllowed)
 	}
+}
 
+func eventHandler(w http.ResponseWriter, r *http.Request) {
+	data, err := events.ReadEvents()
+	api.SendResponse(w, data, err)
 }
 
 func InitializeServer() error {
@@ -81,6 +86,7 @@ func InitializeServer() error {
 	http.HandleFunc(DEFAULT_API_PATH+"forecast/", forecastHandler)
 	http.HandleFunc(DEFAULT_API_PATH+"forecast/consume/", consumeForecastHandler)
 	http.HandleFunc(DEFAULT_API_PATH+"forecast/update/", updateForecastHandler)
+	http.HandleFunc(DEFAULT_API_PATH+"event/", eventHandler)
 	http.HandleFunc(DEFAULT_API_PATH, defaultApiHandler)
 	http.HandleFunc("/", defaultPathHandler)
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))

@@ -212,7 +212,7 @@ func ReadForecastsFromDb(fromStr string, toStr string) (*[]Forecast, error) {
 		var forecast Forecast
 		err := rows.Scan(&forecast.Id, &forecast.PeriodEnd, &forecast.Value, &forecast.Actual)
 		if err != nil {
-			return nil, utils.CustomError("Failed to read singe forecast", err)
+			return nil, utils.CustomError("Failed to read single forecast", err)
 		}
 
 		forecasts = append(forecasts, forecast)

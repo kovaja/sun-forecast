@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"net/http"
+	"reflect"
 	"time"
 )
 
@@ -35,11 +36,25 @@ func sendJson(w http.ResponseWriter, responseData Response, err error, status *i
 	json.NewEncoder(w).Encode(responseData)
 }
 
+func maybeSliceLen(data interface{}) int {
+	value := reflect.ValueOf(data)
+	if value.Kind() == reflect.Ptr {
+		value = value.Elem()
+	}
+
+	if value.Kind() == reflect.Slice {
+		return value.Len()
+	}
+
+	return -1
+}
+
 func getResponse(data any) Response {
 	response := make(Response)
 
 	response["date"] = time.Now().UTC().Format("2006-01-02T15:04:05.000Z")
 	response["data"] = data
+	response["num"] = maybeSliceLen(data)
 
 	return response
 }
