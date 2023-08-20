@@ -27,7 +27,7 @@
             <tbody>
             {#each events as event}
                 <tr>
-                    <td>{formatDate(event.timestamp)}</td>
+                    <td>{formatDate(event.timestamp, true)}</td>
                     <td>{event.message}</td>
                 </tr>
             {/each}

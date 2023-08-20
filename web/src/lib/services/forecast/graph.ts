@@ -3,7 +3,13 @@ import * as d3 from "d3";
 import { createXScale, getXDomain, createYScale, getYDomain, getPeriodStart } from './domains';
 import { createTooltip, getMouseLeaveHandler, getMouseOverHandler } from './tooltip';
 import { forecastSuccessRate } from './utils';
-import { ACTUAL_BAR_FILL, ACTUAL_BAR_STROKE, FORECAST_BAR_FILL, FORECAST_BAR_STROKE } from './constants';
+import {
+  ACTUAL_BAR_FILL,
+  ACTUAL_BAR_STROKE,
+  FORECAST_BAR_FILL,
+  FORECAST_BAR_STROKE, SUCCESSRATE_GREEN,
+  SUCCESSRATE_RED
+} from './constants';
 
 export const GRAPH_ROOT = 'graph-root';
 const GRAPH_ROOT_SELECTOR = '.' + GRAPH_ROOT
@@ -111,7 +117,7 @@ function appendText(svg, data, x, y) {
     .attr("fill", d => {
       const successRate = forecastSuccessRate(d)
       if (typeof successRate === 'number') {
-        return successRate > 0 ? '#33FF33' : '#FF5733'
+        return successRate > 0 ?  SUCCESSRATE_GREEN : SUCCESSRATE_RED
       }
       return ''
     })
@@ -130,8 +136,6 @@ export function plotGraph(data: Forecast[]) {
   const height = 600 - margin.top - margin.bottom;
   const rightEdge = width - margin.left - margin.right
   const bottomEdge = height - 50
-
-
 
   const colPadScale = createColPadScale()
   COLUMN_PADDING = colPadScale(data.length)

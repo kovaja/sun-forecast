@@ -30,7 +30,7 @@ export function getMouseOverHandler(tooltip) {
        <li>Time: ${formatDay(periodEnd)}</li>
        <li>Time: ${formatTime(getPeriodStart(periodEnd).toISOString())} - ${formatTime(periodEnd)}</li>
        <li style="color:${FORECAST_BAR_STROKE};">Forcast: ${value.toFixed(0)} (W)</li>
-       <li style="color:${ACTUAL_BAR_STROKE};">Actual: ${actual === null ? 'No data' : actual.toFixed(0) + '(W)'}</li>
+       <li style="color:${ACTUAL_BAR_STROKE};">Actual: ${actual === null ? 'No data' : actual.toFixed(0) + '(W  )'}</li>
      </ul>
     `
     tooltip

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { onDestroy, onMount } from 'svelte';
   import { fetchForecast } from '../services/api/forecast.api';
   import { GRAPH_ROOT, plotGraph } from '../services/forecast/graph';
 
@@ -12,7 +12,6 @@
       plotGraph(data)
     }
   }
-
   async function updateWindowSizeUp() {
     windowSize += 1
     await renderGraph()
@@ -23,7 +22,14 @@
     await renderGraph()
   }
 
-  onMount(renderGraph)
+  onMount(async () => {
+    await renderGraph()
+    window.addEventListener('resize', renderGraph)
+  })
+
+  onDestroy(() => {
+    window.removeEventListener('resize', renderGraph)
+  })
 </script>
 
 <div>
