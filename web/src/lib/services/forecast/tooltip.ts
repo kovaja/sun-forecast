@@ -23,7 +23,7 @@ export function createTooltip(selector: string) {
 // Three function that change the tooltip when user hover / move / leave a cell
 export function getMouseOverHandler(tooltip) {
   return function () {
-    const {value, actual, periodEnd }: Forecast = d3.select(this).datum() as Forecast;
+    const {value, actual, periodEnd}: Forecast = d3.select(this).datum() as Forecast;
     const html = `
      <ul>
        <li>Time: ${formatDay(periodEnd)}</li>

@@ -1,16 +1,16 @@
 <script lang="ts">
-    import type { AppEvent } from '../lib/types';
-    import { fetchEvents } from '../lib/services/api/event.api';
-    import { onMount } from 'svelte';
-    import { formatDate } from '../lib/utils/date';
+  import type { AppEvent } from '../lib/types';
+  import { fetchEvents } from '../lib/services/api/event.api';
+  import { onMount } from 'svelte';
+  import { formatDate } from '../lib/utils/date';
 
-    let events: AppEvent[] = []
-    let loading = true
+  let events: AppEvent[] = []
+  let loading = true
 
-    onMount(async () => {
-        events = await fetchEvents()
-        loading = false
-    })
+  onMount(async () => {
+    events = await fetchEvents()
+    loading = false
+  })
 </script>
 
 <main>

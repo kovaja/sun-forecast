@@ -1,28 +1,29 @@
 <script lang="ts">
-    import { onMount } from 'svelte';
-    import { fetchForecast } from '../services/api/forecast.api';
-    import { GRAPH_ROOT, plotGraph } from '../services/forecast/graph';
+  import { onMount } from 'svelte';
+  import { fetchForecast } from '../services/api/forecast.api';
+  import { GRAPH_ROOT, plotGraph } from '../services/forecast/graph';
 
-    let windowSize = 12
-    let windowMiddle = new Date()
+  let windowSize = 12
+  let windowMiddle = new Date()
 
-    async function renderGraph() {
-        const data = await fetchForecast(windowSize, windowMiddle)
-        if (data) {
-            plotGraph(data)
-        }
+  async function renderGraph() {
+    const data = await fetchForecast(windowSize, windowMiddle)
+    if (data) {
+      plotGraph(data)
     }
+  }
 
-    async function updateWindowSizeUp() {
-        windowSize += 1
-        await renderGraph()
-    }
-    async function updateWindowSizeDown() {
-        windowSize -= 1
-        await renderGraph()
-    }
+  async function updateWindowSizeUp() {
+    windowSize += 1
+    await renderGraph()
+  }
 
-    onMount(renderGraph)
+  async function updateWindowSizeDown() {
+    windowSize -= 1
+    await renderGraph()
+  }
+
+  onMount(renderGraph)
 </script>
 
 <div>

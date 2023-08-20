@@ -1,8 +1,8 @@
 <script lang="ts">
-    import type { AppLink } from '../types';
-    import { Link } from 'svelte-routing';
+  import type { AppLink } from '../types';
+  import { Link } from 'svelte-routing';
 
-    export let links: AppLink[];
+  export let links: AppLink[];
 </script>
 
 <nav>

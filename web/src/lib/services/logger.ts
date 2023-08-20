@@ -1,5 +1,5 @@
 function log(...args: any[]) {
-    console.log('[SunForecast]', ...args)
+  console.log('[SunForecast]', ...args)
 }
 
-export const logger = { log }
+export const logger = {log}
