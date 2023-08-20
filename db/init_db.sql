@@ -15,3 +15,7 @@ CREATE TABLE IF NOT EXISTS events (
     timestamp TIMESTAMP WITH TIME ZONE DEFAULT current_timestamp,
     message TEXT NOT NULL
 );
+
+-- Migrations
+ALTER TABLE forecasts ADD COLUMN actual_count INT DEFAULT 0;
+ALTER TABLE forecasts ADD COLUMN last_actual_at TIMESTAMP WITH TIME ZONE DEFAULT NULL;

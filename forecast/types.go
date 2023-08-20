@@ -15,10 +15,12 @@ type SolcastApiForcastResponse struct {
 }
 
 type Forecast struct {
-	Id        int       `json:"id"`
-	PeriodEnd time.Time `json:"periodEnd"`
-	Value     float64   `json:"value"`
-	Actual    *float64  `json:"actual"`
+	Id           int        `json:"id"`
+	PeriodEnd    time.Time  `json:"periodEnd"`
+	Value        float64    `json:"value"`
+	Actual       *float64   `json:"actual"`
+	ActualCount  int        `json:"actualCount"`
+	LastActualAt *time.Time `json:"lastActualAt"`
 }
 
 type ForecastResponse struct {
@@ -32,6 +34,8 @@ type HaHistoryRecord struct {
 }
 
 type ForecastUpdate struct {
-	PeriodEnd time.Time
-	Actual    float64
+	PeriodEnd    time.Time
+	Actual       float64
+	ActualCount  int
+	LastActualAt time.Time
 }

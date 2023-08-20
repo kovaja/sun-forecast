@@ -99,22 +99,22 @@ func updateForcastValue(db *sql.DB, id int, value float64) error {
 	return nil
 }
 
-func updateForcastActual(db *sql.DB, periodEnd time.Time, actual float64) error {
-	query := "UPDATE forecasts SET actual = $1 WHERE period_end = $2"
-	result, err := db.Exec(query, actual, periodEnd)
+func updateForcastActual(db *sql.DB, update *ForecastUpdate) error {
+	query := "UPDATE forecasts SET actual = $1, actual_count = $2, last_actual_at = $3 WHERE period_end = $4"
+	result, err := db.Exec(query, update.Actual, update.ActualCount, update.LastActualAt, update.PeriodEnd)
 
 	if err != nil {
-		errorMsg := fmt.Sprintf("Failed to update forecast %v.", periodEnd)
+		errorMsg := fmt.Sprintf("Failed to update forecast %v.", update.PeriodEnd)
 		return utils.CustomError(errorMsg, err)
 	}
 
 	rowsAffected, err := result.RowsAffected()
 	if err != nil {
-		errorMsg := fmt.Sprintf("Failed to check affected rows/ for forecast %v", periodEnd)
+		errorMsg := fmt.Sprintf("Failed to check affected rows/ for forecast %v", update.PeriodEnd)
 		return utils.CustomError(errorMsg, err)
 	}
 
-	logger.Log("Updated forecast actual %v, rowsAffected: %d", periodEnd, rowsAffected)
+	logger.Log("Updated forecast actual %v, rowsAffected: %d", update.PeriodEnd, rowsAffected)
 	return nil
 }
 
@@ -199,7 +199,7 @@ func ReadForecastsFromDb(fromStr string, toStr string) (*[]Forecast, error) {
 	}
 
 	db := db.GetDb()
-	query := "SELECT id, period_end, value, actual FROM forecasts WHERE period_end >= $1 AND period_end <= $2 ORDER BY period_end ASC"
+	query := "SELECT id, period_end, value, actual, actual_count, last_actual_at FROM forecasts WHERE period_end >= $1 AND period_end <= $2 ORDER BY period_end ASC"
 
 	rows, err := db.Query(query, from, to)
 	if err != nil {
@@ -210,7 +210,7 @@ func ReadForecastsFromDb(fromStr string, toStr string) (*[]Forecast, error) {
 	var forecasts []Forecast
 	for rows.Next() {
 		var forecast Forecast
-		err := rows.Scan(&forecast.Id, &forecast.PeriodEnd, &forecast.Value, &forecast.Actual)
+		err := rows.Scan(&forecast.Id, &forecast.PeriodEnd, &forecast.Value, &forecast.Actual, &forecast.ActualCount, &forecast.LastActualAt)
 		if err != nil {
 			return nil, utils.CustomError("Failed to read single forecast", err)
 		}
@@ -235,12 +235,12 @@ func UpdateForecasts(r *http.Request) ([]ForecastUpdate, error) {
 	records := data[0]
 	logger.Log("Received update data %d", len(records))
 
-	updates := ComputeUpdates(records)
 	db := db.GetDb()
+	updates := ComputeUpdates(db, records)
 	updated := 0
 
 	for _, update := range updates {
-		err := updateForcastActual(db, update.PeriodEnd, update.Actual)
+		err := updateForcastActual(db, &update)
 		if err != nil {
 			return nil, err
 		}
