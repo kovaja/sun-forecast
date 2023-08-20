@@ -3,6 +3,7 @@ import * as d3 from "d3";
 import { createXScale, getXDomain, createYScale, getYDomain, getPeriodStart } from './domains';
 import { createTooltip, getMouseLeaveHandler, getMouseOverHandler } from './tooltip';
 import { forecastSuccessRate } from './utils';
+import { ACTUAL_BAR_FILL, ACTUAL_BAR_STROKE, FORECAST_BAR_FILL, FORECAST_BAR_STROKE } from './constants';
 
 export const GRAPH_ROOT = 'graph-root';
 const GRAPH_ROOT_SELECTOR = '.' + GRAPH_ROOT
@@ -83,6 +84,7 @@ function appendColumns(
     })
     .attr("fill", fill)
     .attr("stroke", stroke)
+    .attr("rx", "5")
     .on("mouseover", getMouseOverHandler(tooltip))
     // .on("mousemove", mousemove)
     .on("mouseleave", getMouseLeaveHandler(tooltip))
@@ -129,6 +131,8 @@ export function plotGraph(data: Forecast[]) {
   const rightEdge = width - margin.left - margin.right
   const bottomEdge = height - 50
 
+
+
   const colPadScale = createColPadScale()
   COLUMN_PADDING = colPadScale(data.length)
 
@@ -139,7 +143,7 @@ export function plotGraph(data: Forecast[]) {
 
   appendXAxis(svg, bottomEdge, x)
   appendYAxis(svg, y)
-  appendColumns(svg, rightEdge, bottomEdge, data, x, y, tooltip, 'value', "#69b3a2", "#69b3a2")
-  appendColumns(svg, rightEdge, bottomEdge, data, x, y, tooltip, 'actual', "rgba(194,137,33,0.29)", "#c28921")
+  appendColumns(svg, rightEdge, bottomEdge, data, x, y, tooltip, 'value', FORECAST_BAR_FILL, FORECAST_BAR_STROKE)
+  appendColumns(svg, rightEdge, bottomEdge, data, x, y, tooltip, 'actual', ACTUAL_BAR_FILL, ACTUAL_BAR_STROKE)
   appendText(svg, data, x, y)
 }

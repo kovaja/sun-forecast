@@ -3,6 +3,7 @@ import type { Forecast } from '../../types';
 import type { FadeParams } from 'svelte/transition';
 import { formatDate, formatDay, formatTime } from '../../utils/date';
 import { getPeriodStart } from './domains';
+import { ACTUAL_BAR_STROKE, FORECAST_BAR_STROKE } from './constants';
 
 export function createTooltip(selector: string) {
   return d3.select(selector)
@@ -28,8 +29,8 @@ export function getMouseOverHandler(tooltip) {
      <ul>
        <li>Time: ${formatDay(periodEnd)}</li>
        <li>Time: ${formatTime(getPeriodStart(periodEnd).toISOString())} - ${formatTime(periodEnd)}</li>
-       <li>Forcast: ${value.toFixed(0)}</li>
-       <li>Actual: ${actual === null ? 'No data' : actual.toFixed(0)}</li>
+       <li style="color:${FORECAST_BAR_STROKE};">Forcast: ${value.toFixed(0)} (W)</li>
+       <li style="color:${ACTUAL_BAR_STROKE};">Actual: ${actual === null ? 'No data' : actual.toFixed(0) + '(W)'}</li>
      </ul>
     `
     tooltip
