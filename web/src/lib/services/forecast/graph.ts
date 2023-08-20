@@ -2,14 +2,13 @@ import type { Forecast } from '../../types';
 import * as d3 from "d3";
 import { createXScale, getXDomain, createYScale, getYDomain, getPeriodStart } from './domains';
 import { createTooltip, getMouseLeaveHandler, getMouseOverHandler } from './tooltip';
-import { forecastSuccessRate } from './utils';
 import {
   ACTUAL_BAR_FILL,
   ACTUAL_BAR_STROKE,
   FORECAST_BAR_FILL,
-  FORECAST_BAR_STROKE, SUCCESSRATE_GREEN,
-  SUCCESSRATE_RED
+  FORECAST_BAR_STROKE
 } from './constants';
+import { appendText } from './text';
 
 export const GRAPH_ROOT = 'graph-root';
 const GRAPH_ROOT_SELECTOR = '.' + GRAPH_ROOT
@@ -45,6 +44,27 @@ function createSvg(width: number, height: number, margin: Margin) {
       "translate(" + margin.left + "," + margin.top + ")"
     );
 }
+
+function createXGrid(x, size, numberOfTicks) {
+  return d3.axisBottom(x).tickSize(-size).tickFormat(() => '').ticks(numberOfTicks);
+}
+function createYGrid(y, size, numberOfTicks) {
+  return d3.axisLeft(y).tickSize(-size).tickFormat(() => '').ticks(numberOfTicks);
+}
+
+function appendXGrid(svg, grid, height) {
+  svg.append('g')
+    .attr('class', 'x axis-grid')
+    .attr('transform', 'translate(0,' + height + ')')
+    .call(grid)
+}
+
+function appendYGrid(svg, grid) {
+  svg.append('g')
+    .attr('class', 'y axis-grid')
+    .call(grid);
+}
+
 
 function appendXAxis(svg, bottomEdge: number, x) {
   svg.append("g")
@@ -96,33 +116,6 @@ function appendColumns(
     .on("mouseleave", getMouseLeaveHandler(tooltip))
 }
 
-function appendText(svg, data, x, y) {
-  svg.selectAll("successRate")
-    .data(data)
-    .enter()
-    .append("text")
-    .attr("x", function (d) {
-      return COLUMN_PADDING / 2 + x(getPeriodStart(d.periodEnd));
-    })
-    .attr("y", function (d) {
-      return d3.min([y(d.actual ?? 0), y(d.value)]) - 10;
-    })
-    .text(d => {
-      const successRate = forecastSuccessRate(d)
-      if (typeof successRate === 'number') {
-        return successRate.toFixed(0) + '%'
-      }
-      return ''
-    })
-    .attr("fill", d => {
-      const successRate = forecastSuccessRate(d)
-      if (typeof successRate === 'number') {
-        return successRate > 0 ?  SUCCESSRATE_GREEN : SUCCESSRATE_RED
-      }
-      return ''
-    })
-    .attr("font-size", "12px")
-}
 
 function throwAwayOldGraph() {
   document.querySelector(GRAPH_ROOT_SELECTOR).innerHTML = ''
@@ -144,10 +137,14 @@ export function plotGraph(data: Forecast[]) {
   const x = createXScale(rightEdge, getXDomain(data))
   const y = createYScale(bottomEdge, getYDomain(data))
   const svg = createSvg(width, height, margin)
+  const xAxisGrid = createXGrid(x, bottomEdge, 10)
+  const yAxisGrid = createYGrid(y, rightEdge, 5)
 
+  appendXGrid(svg, xAxisGrid, bottomEdge)
+  appendYGrid(svg, yAxisGrid)
   appendXAxis(svg, bottomEdge, x)
   appendYAxis(svg, y)
   appendColumns(svg, rightEdge, bottomEdge, data, x, y, tooltip, 'value', FORECAST_BAR_FILL, FORECAST_BAR_STROKE)
   appendColumns(svg, rightEdge, bottomEdge, data, x, y, tooltip, 'actual', ACTUAL_BAR_FILL, ACTUAL_BAR_STROKE)
-  appendText(svg, data, x, y)
+  appendText(svg, data, x, y, COLUMN_PADDING)
 }
