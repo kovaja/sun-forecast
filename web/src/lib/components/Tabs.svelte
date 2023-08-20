@@ -14,13 +14,7 @@
 </nav>
 
 <style>
-    nav {
-        display: flex;
-        align-items: center;
-        justify-content: space-evenly;
-        background-color: #395B64;
-        /*height: 5vh;*/
-    }
+
 
     /*Rest of the styles in app.css*/
 </style>

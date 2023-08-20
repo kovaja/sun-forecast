@@ -1,45 +1,74 @@
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+    font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    font-weight: 400;
 
-  color: #E7F6F2;
-  background-color: #2C3333;
+    color: #E7F6F2;
+    background-color: #2C3333;
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-text-size-adjust: 100%;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-text-size-adjust: 100%;
 }
 
 body {
-  margin: 0;
-  padding: 0;
+    margin: 0;
+    padding: 0;
 }
 
 a, a:visited {
-  color: #E7F6F2;
-  text-decoration: none;
-  transition: box-shadow .3s;
+    color: #E7F6F2;
+    text-decoration: none;
+    transition: box-shadow .3s;
 }
 
 a:hover {
-  box-shadow: 0 0 11px rgba(33, 33, 33, .2);
+    box-shadow: 0 0 11px rgba(33, 33, 33, .2);
 }
 
 /*I have to put it between global styles*/
 /*because Svelte is bonkers*/
 /*and it does not let you style routing links*/
+nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    background-color: #395B64;
+    /*height: 5vh;*/
+}
+
 nav a {
-  flex: 1;
-  border-color: #A5C9CA;
-  border-left: 3px solid;
-  padding: 10px;
+    flex: 1;
+    border-color: #A5C9CA;
+    border-left: 3px solid;
+    padding: 10px;
 }
 
 nav a[aria-current="page"] {
-  border-bottom: 3px solid;
+    border-bottom: 3px solid;
+}
+
+/**
+BUTTONS
+ */
+button {
+    border-color: #A5C9CA;
+    border-radius: 2px;
+    border-width: 1px;
+    background-color: #395B64;
+    color: #E7F6F2;
+    border-style: solid;
+    padding: 5px 15px;
+    font-size: 15px;
+    cursor: pointer;
+    transition-property: background-color, color;
+    transition: ease-in-out 0.3s;
+}
+button:hover, button:focus {
+    background-color: #E7F6F2;
+    color: #395B64;
 }
 
 /**
@@ -48,5 +77,5 @@ https://colorhunt.co/palette/2c3333395b64a5c9cae7f6f2
 
 /* GRAPH */
 .axis-grid {
-  opacity: 0.2;
+    opacity: 0.2;
 }

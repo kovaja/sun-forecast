@@ -34,10 +34,12 @@
 
 <div>
     <div class="graph-control">
-        <div class="graph-control_window-size">
-            <button on:click={updateWindowSizeDown}>&lt;</button>
-            Window size: {windowSize}
-            <button on:click={updateWindowSizeUp}>&gt;</button>
+        <div class="graph-control_variable">
+            <button on:click={updateWindowSizeDown}>-</button>
+            <span class="graph-control_label">
+              Window size: {windowSize}
+            </span>
+            <button on:click={updateWindowSizeUp}>+</button>
         </div>
     </div>
     <div class={GRAPH_ROOT + ' graph-container'}></div>
@@ -46,5 +48,22 @@
 <style>
     .graph-container {
         width: 100%;
+    }
+    .graph-control {
+        margin: 0 0 0 40px;
+        padding: 2px 0;
+        background-color: #A5C9CA;
+        color: #395B64;
+        display: flex;
+        justify-content: center;
+    }
+    .graph-control_variable {
+        display: flex;
+        align-items: center;
+    }
+    .graph-control_label {
+        padding: 5px;
+        border: 1px solid #395B64;
+        font-size: 11px;
     }
 </style>
