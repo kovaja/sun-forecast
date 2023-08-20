@@ -3,7 +3,7 @@
   import { fetchForecast } from '../services/api/forecast.api';
   import { GRAPH_ROOT, plotGraph } from '../services/forecast/graph';
 
-  let windowSize = 12
+  let windowSize = 8
   let windowMiddle = new Date()
 
   async function renderGraph() {

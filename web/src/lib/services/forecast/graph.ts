@@ -9,6 +9,7 @@ import {
   FORECAST_BAR_STROKE
 } from './constants';
 import { appendText } from './text';
+import { formatTime } from '../../utils/date';
 
 export const GRAPH_ROOT = 'graph-root';
 const GRAPH_ROOT_SELECTOR = '.' + GRAPH_ROOT
@@ -52,6 +53,7 @@ function createYGrid(y, size, numberOfTicks) {
   return d3.axisLeft(y).tickSize(-size).tickFormat(() => '').ticks(numberOfTicks);
 }
 
+
 function appendXGrid(svg, grid, height) {
   svg.append('g')
     .attr('class', 'x axis-grid')
@@ -64,7 +66,6 @@ function appendYGrid(svg, grid) {
     .attr('class', 'y axis-grid')
     .call(grid);
 }
-
 
 function appendXAxis(svg, bottomEdge: number, x) {
   svg.append("g")
@@ -116,6 +117,27 @@ function appendColumns(
     .on("mouseleave", getMouseLeaveHandler(tooltip))
 }
 
+function appendCurrentTimeIndicator(svg, x, bottomEdge) {
+  const now = new Date()
+  const xCoor = x(now)
+  const yCoor = 50
+
+  svg.append("line")
+    .attr("x1", xCoor)
+    .attr("y1", yCoor)
+    .attr("x2", xCoor)
+    .attr("y2", bottomEdge)
+    .attr("class", "current-time-line")
+    .style("stroke-width", 1);
+
+  svg.append("text")
+    .attr('x', xCoor - 2)
+    .attr('y', yCoor - 10)
+    .attr('font-size', 13)
+    .attr('class', 'current-time-text')
+    .text(formatTime(now.toISOString()))
+
+}
 
 function throwAwayOldGraph() {
   document.querySelector(GRAPH_ROOT_SELECTOR).innerHTML = ''
@@ -142,9 +164,11 @@ export function plotGraph(data: Forecast[]) {
 
   appendXGrid(svg, xAxisGrid, bottomEdge)
   appendYGrid(svg, yAxisGrid)
-  appendXAxis(svg, bottomEdge, x)
-  appendYAxis(svg, y)
+
   appendColumns(svg, rightEdge, bottomEdge, data, x, y, tooltip, 'value', FORECAST_BAR_FILL, FORECAST_BAR_STROKE)
   appendColumns(svg, rightEdge, bottomEdge, data, x, y, tooltip, 'actual', ACTUAL_BAR_FILL, ACTUAL_BAR_STROKE)
+  appendXAxis(svg, bottomEdge, x)
+  appendYAxis(svg, y)
   appendText(svg, data, x, y, COLUMN_PADDING)
+  appendCurrentTimeIndicator(svg, x, bottomEdge)
 }
