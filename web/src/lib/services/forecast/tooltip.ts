@@ -1,7 +1,8 @@
 import * as d3 from 'd3';
 import type { Forecast } from '../../types';
 import type { FadeParams } from 'svelte/transition';
-import { formatDate } from '../../utils/date';
+import { formatDate, formatDay, formatTime } from '../../utils/date';
+import { getPeriodStart } from './domains';
 
 export function createTooltip(selector: string) {
   return d3.select(selector)
@@ -16,7 +17,7 @@ export function createTooltip(selector: string) {
     .style("padding", "5px")
     .style("top", 200)
     .style('right', 0)
-    .style('width', '30%');
+    .style('width', '20%');
 }
 
 // Three function that change the tooltip when user hover / move / leave a cell
@@ -25,7 +26,8 @@ export function getMouseOverHandler(tooltip) {
     const {value, actual, periodEnd }: Forecast = d3.select(this).datum() as Forecast;
     const html = `
      <ul>
-        <li>Time: ${formatDate(periodEnd)}</li>
+       <li>Time: ${formatDay(periodEnd)}</li>
+       <li>Time: ${formatTime(getPeriodStart(periodEnd).toISOString())} - ${formatTime(periodEnd)}</li>
        <li>Forcast: ${value.toFixed(0)}</li>
        <li>Actual: ${actual === null ? 'No data' : actual.toFixed(0)}</li>
      </ul>
