@@ -29,7 +29,7 @@ func LogEvent(format string, a ...any) {
 
 func ReadEvents() (*[]AppEvent, error) {
 	db := db.GetDb()
-	query := "SELECT id, timestamp, message FROM events ORDER BY timestamp;"
+	query := "SELECT id, timestamp, message FROM events ORDER BY timestamp DESC;"
 
 	rows, err := db.Query(query)
 	if err != nil {

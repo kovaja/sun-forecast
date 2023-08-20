@@ -18,7 +18,7 @@
         display: flex;
         align-items: center;
         justify-content: space-evenly;
-        background-color: #B8DFD8;
+        background-color: #395B64;
         /*height: 5vh;*/
     }
 

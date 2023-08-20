@@ -1,28 +1,39 @@
 import * as d3 from 'd3';
 import type { Forecast } from '../../types';
 import type { FadeParams } from 'svelte/transition';
+import { formatDate } from '../../utils/date';
 
 export function createTooltip(selector: string) {
-    return d3.select(selector)
-        .append("div")
-        .style("opacity", 0)
-        .attr("class", "tooltip")
-        .style("background-color", "white")
-        .style("border", "solid")
-        .style("border-width", "1px")
-        .style("border-radius", "5px")
-        .style("padding", "10px");
+  return d3.select(selector)
+    .append("div")
+    .style("opacity", 0)
+    .attr("class", "tooltip")
+    .style("background-color", "#395B64")
+    .style("position", "absolute")
+    .style("border", "solid")
+    .style("border-width", "1px")
+    .style("border-radius", "5px")
+    .style("padding", "5px")
+    .style("top", 200)
+    .style('right', 0)
+    .style('width', '30%');
 }
 
 // Three function that change the tooltip when user hover / move / leave a cell
 export function getMouseOverHandler(tooltip) {
-    return () => {
-        const singleForecast: Forecast = d3.select(this).datum() as Forecast;
-
-        tooltip
-            .html(`Forcasted: ${singleForecast.value.toFixed(2)} vs Actual: ${(singleForecast.actual ?? 0).toFixed(2)}`)
-            .style("opacity", 1)
-    }
+  return function () {
+    const {value, actual, periodEnd }: Forecast = d3.select(this).datum() as Forecast;
+    const html = `
+     <ul>
+        <li>Time: ${formatDate(periodEnd)}</li>
+       <li>Forcast: ${value.toFixed(0)}</li>
+       <li>Actual: ${actual === null ? 'No data' : actual.toFixed(0)}</li>
+     </ul>
+    `
+    tooltip
+      .html(html)
+      .style("opacity", 1)
+  }
 }
 
 // const mousemove = function(d) {
@@ -31,8 +42,8 @@ export function getMouseOverHandler(tooltip) {
 //         .style("top", (d3.mouse(this)[1]) + "px")
 // }
 export function getMouseLeaveHandler(tooltip) {
-    return () => {
-        tooltip
-            .style("opacity", 0)
-    }
+  return () => {
+    tooltip
+      .style("opacity", 0)
+  }
 }

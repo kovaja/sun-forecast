@@ -3,8 +3,8 @@
   line-height: 1.5;
   font-weight: 400;
 
-  color: #4C4C6D;
-  background-color: #E8F6EF;
+  color: #E7F6F2;
+  background-color: #2C3333;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -19,7 +19,7 @@ body {
 }
 
 a, a:visited {
-  color: #4C4C6D;
+  color: #E7F6F2;
   text-decoration: none;
   transition: box-shadow .3s;
 }
@@ -32,15 +32,15 @@ a:hover {
 /*and it does not let you style routing links*/
 nav a {
   flex: 1;
-  border-left: 3px solid #FFE194;
+  border-color: #A5C9CA;
+  border-left: 3px solid;
   padding: 10px;
 }
 
 nav a[aria-current="page"] {
-  border-bottom: 3px solid #FFE194;
+  border-bottom: 3px solid;
 }
 
 /**
-#B8DFD8 nav
-#FFE194 boxes?s
+https://colorhunt.co/palette/2c3333395b64a5c9cae7f6f2
  */
