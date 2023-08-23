@@ -2,7 +2,6 @@ package server
 
 import (
 	"errors"
-	"kovaja/sun-forecast/api"
 	"kovaja/sun-forecast/events"
 	"kovaja/sun-forecast/forecast"
 	"kovaja/sun-forecast/logger"
@@ -13,65 +12,65 @@ import (
 
 const DEFAULT_API_PATH = "/api/"
 
+type ApiHandler func(r *http.Request) (any, error)
+
 func defaultPathHandler(w http.ResponseWriter, r *http.Request) {
 	logger.Log("Serving index.html %s", r.URL)
 	http.ServeFile(w, r, "static/index.html")
 }
 
-func defaultApiHandler(w http.ResponseWriter, r *http.Request) {
-	logger.Log("Default api called")
-	api.SendResponse(w, nil, nil)
+func defaultApiHandler(r *http.Request) (any, error) {
+	return nil, nil
 }
 
-func currentWeatherHandler(w http.ResponseWriter, r *http.Request) {
-	data, err := weather.GetCurrentWeather()
-	api.SendResponse(w, data, err)
+func currentWeatherHandler(r *http.Request) (any, error) {
+	return weather.GetCurrentWeather()
 }
 
-func weatherForcastHandler(w http.ResponseWriter, r *http.Request) {
-	data, err := weather.GetForecast()
-	api.SendResponse(w, data, err)
+func weatherForecastHandler(r *http.Request) (any, error) {
+	return weather.GetForecast()
 }
 
-func forecastHandler(w http.ResponseWriter, r *http.Request) {
+func forecastHandler(r *http.Request) (any, error) {
 	fromStr := r.URL.Query().Get("from")
 	toStr := r.URL.Query().Get("to")
 
-	var err error
 	if toStr == "" {
-		err = errors.New("Missing required parameter to")
+		return nil, errors.New("Missing required parameter to")
 	}
+
 	if fromStr == "" {
-		err = errors.New("Missing required parameter from")
-	}
-	if err != nil {
-		api.SendResponse(w, nil, err)
-		return
+		return nil, errors.New("Missing required parameter from")
 	}
 
-	data, err := forecast.ReadForecastsFromDb(fromStr, toStr)
-	api.SendResponse(w, data, err)
+	return forecast.ReadForecastsFromDb(fromStr, toStr)
 }
 
-func consumeForecastHandler(w http.ResponseWriter, r *http.Request) {
+func consumeForecastHandler(r *http.Request) (any, error) {
 	err := forecast.ConsumeForecasts()
-	api.SendResponse(w, nil, err)
+	return nil, err
 }
 
-func updateForecastHandler(w http.ResponseWriter, r *http.Request) {
-	var err error
+func updateForecastHandler(r *http.Request) (any, error) {
 	if r.Method == http.MethodPost {
-		updates, err := forecast.UpdateForecasts(r)
-		api.SendResponse(w, updates, err)
-	} else {
-		err = errors.New("Method not allowed")
-		api.SendError(w, err, http.StatusMethodNotAllowed)
+		return forecast.UpdateForecasts(r)
 	}
+
+	return nil, errors.New("Method not allowed")
 }
 
-func eventHandler(w http.ResponseWriter, r *http.Request) {
-	data, err := events.ReadEvents()
-	api.SendResponse(w, data, err)
+func eventHandler(r *http.Request) (any, error) {
+	return events.ReadEvents()
+}
+
+var routes map[string]ApiHandler = map[string]ApiHandler{
+	"forecast":         forecastHandler,
+	"weather":          currentWeatherHandler,
+	"weather/forecast": weatherForecastHandler,
+	"forecast/consume": consumeForecastHandler,
+	"forecast/update":  updateForecastHandler,
+	"event":            eventHandler,
+	"":                 defaultApiHandler,
 }
 
 func InitializeServer() error {
@@ -81,14 +80,11 @@ func InitializeServer() error {
 		return utils.CustomError("Failed to load port env variable", err)
 	}
 
-	http.HandleFunc(DEFAULT_API_PATH+"weather/", currentWeatherHandler)
-	http.HandleFunc(DEFAULT_API_PATH+"weather/forecast/", weatherForcastHandler)
-	http.HandleFunc(DEFAULT_API_PATH+"forecast/", forecastHandler)
-	http.HandleFunc(DEFAULT_API_PATH+"forecast/consume/", consumeForecastHandler)
-	http.HandleFunc(DEFAULT_API_PATH+"forecast/update/", updateForecastHandler)
-	http.HandleFunc(DEFAULT_API_PATH+"event/", eventHandler)
-	http.HandleFunc(DEFAULT_API_PATH, defaultApiHandler)
-	http.HandleFunc("/", defaultPathHandler)
+	for path, handler := range routes {
+		logger.Log("Register handler %s/", path)
+		http.HandleFunc(DEFAULT_API_PATH+path+"/", logRequest(handler))
+	}
+
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
 	logger.Log("Server will listen on port %s", (":" + port))

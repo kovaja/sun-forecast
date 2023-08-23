@@ -1,9 +1,13 @@
 package logger
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
 func getAppPrefix() string {
-	return "[Sun-forecast]"
+	timestamp := time.Now().UTC().Format("2006-01-02T15:04:05.000Z07:00")
+	return fmt.Sprintf("[Sun-forecast][%s]", timestamp)
 }
 
 func Log(format string, a ...any) {
