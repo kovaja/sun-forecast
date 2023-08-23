@@ -85,6 +85,7 @@ func InitializeServer() error {
 		http.HandleFunc(DEFAULT_API_PATH+path+"/", logRequest(handler))
 	}
 
+	http.HandleFunc("/", defaultPathHandler)
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
 	logger.Log("Server will listen on port %s", (":" + port))
