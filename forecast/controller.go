@@ -89,13 +89,12 @@ func updateForcastValue(db *sql.DB, id int, value float64) error {
 		return utils.CustomError(errorMsg, err)
 	}
 
-	rowsAffected, err := result.RowsAffected()
+	_, err = result.RowsAffected()
 	if err != nil {
 		errorMsg := fmt.Sprintf("Failed to check affected rows/ for forecast %d", id)
 		return utils.CustomError(errorMsg, err)
 	}
 
-	logger.Log("Updated forecast value %d, rowsAffected: %d", id, rowsAffected)
 	return nil
 }
 
@@ -127,7 +126,6 @@ func createForcast(db *sql.DB, forecast *Forecast) error {
 		return utils.CustomError(errorMsg, err)
 	}
 
-	logger.Log("Created forecast for %s", forecast.PeriodEnd)
 	return nil
 }
 
@@ -154,7 +152,6 @@ func ConsumeForecasts() error {
 				updated += 1
 			} else {
 				skipped += 1
-				logger.Log("Skipping forecast updated for %d as value is the same", id)
 			}
 		} else {
 			err := createForcast(db, &forecast)
