@@ -52,17 +52,16 @@ func appendUpdate(updates []ForecastUpdate, updated bool, newUpdate ForecastUpda
 	return append(updates, newUpdate)
 }
 
-func ComputeUpdates(db *sql.DB, records []HaHistoryRecord) []ForecastUpdate {
-	/**
-		input record:
+/*
+	  input record:
 		{
 			"state": "505",
 			"last_changed": "2023-08-14T16:16:29.758217+00:00"
-	  }
+		}
 		need to recognize period end - that is next half an hour
 		need to convert state string to float64
-	*/
-
+*/
+func ComputeUpdates(db *sql.DB, records []HaHistoryRecord) []ForecastUpdate {
 	skippedRecords := 0
 	var updates []ForecastUpdate
 	var currentPeriodEnd *time.Time = nil
