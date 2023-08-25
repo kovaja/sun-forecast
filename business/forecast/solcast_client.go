@@ -2,9 +2,9 @@ package forecast
 
 import (
 	"fmt"
-	"kovaja/sun-forecast/httpclient"
-	"kovaja/sun-forecast/logger"
 	"kovaja/sun-forecast/utils"
+	"kovaja/sun-forecast/utils/httpclient"
+	"kovaja/sun-forecast/utils/logger"
 )
 
 func getUrl() (string, error) {

@@ -2,9 +2,9 @@ package events
 
 import (
 	"fmt"
-	"kovaja/sun-forecast/db"
-	"kovaja/sun-forecast/logger"
+	"kovaja/sun-forecast/core/db"
 	"kovaja/sun-forecast/utils"
+	"kovaja/sun-forecast/utils/logger"
 	"time"
 )
 

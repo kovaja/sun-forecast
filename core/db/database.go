@@ -3,8 +3,8 @@ package db
 import (
 	"database/sql"
 	"fmt"
-	"kovaja/sun-forecast/logger"
 	"kovaja/sun-forecast/utils"
+	"kovaja/sun-forecast/utils/logger"
 
 	_ "github.com/lib/pq"
 )

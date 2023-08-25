@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"kovaja/sun-forecast/logger"
+	"kovaja/sun-forecast/utils/logger"
 	"net/http"
 	"time"
 )

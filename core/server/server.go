@@ -2,11 +2,11 @@ package server
 
 import (
 	"errors"
-	"kovaja/sun-forecast/events"
-	"kovaja/sun-forecast/forecast"
-	"kovaja/sun-forecast/logger"
+	"kovaja/sun-forecast/business/events"
+	"kovaja/sun-forecast/business/forecast"
+	"kovaja/sun-forecast/business/weather"
 	"kovaja/sun-forecast/utils"
-	"kovaja/sun-forecast/weather"
+	"kovaja/sun-forecast/utils/logger"
 	"net/http"
 )
 

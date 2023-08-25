@@ -3,7 +3,7 @@ package utils
 import (
 	"encoding/json"
 	"errors"
-	"kovaja/sun-forecast/logger"
+	"kovaja/sun-forecast/utils/logger"
 	"os"
 )
 

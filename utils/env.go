@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"kovaja/sun-forecast/logger"
+	"kovaja/sun-forecast/utils/logger"
 	"os"
 
 	"github.com/joho/godotenv"

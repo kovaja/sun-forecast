@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"kovaja/sun-forecast/db"
-	"kovaja/sun-forecast/server"
+	"kovaja/sun-forecast/core/db"
+	"kovaja/sun-forecast/core/server"
 
 	"github.com/joho/godotenv"
 )

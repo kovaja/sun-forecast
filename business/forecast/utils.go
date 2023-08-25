@@ -2,7 +2,7 @@ package forecast
 
 import (
 	"database/sql"
-	"kovaja/sun-forecast/logger"
+	"kovaja/sun-forecast/utils/logger"
 	"strconv"
 	"time"
 )

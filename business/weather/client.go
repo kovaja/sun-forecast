@@ -3,8 +3,8 @@ package weather
 import (
 	"errors"
 	"fmt"
-	"kovaja/sun-forecast/httpclient"
 	"kovaja/sun-forecast/utils"
+	"kovaja/sun-forecast/utils/httpclient"
 )
 
 const LAT_VAR = "LAT"

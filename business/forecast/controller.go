@@ -5,10 +5,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"kovaja/sun-forecast/db"
-	"kovaja/sun-forecast/events"
-	"kovaja/sun-forecast/logger"
+	"kovaja/sun-forecast/business/events"
+	"kovaja/sun-forecast/core/db"
 	"kovaja/sun-forecast/utils"
+	"kovaja/sun-forecast/utils/logger"
 	"net/http"
 	"time"
 )

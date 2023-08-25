@@ -1,8 +1,7 @@
 package server
 
 import (
-	"kovaja/sun-forecast/api"
-	"kovaja/sun-forecast/logger"
+	"kovaja/sun-forecast/utils/logger"
 	"net/http"
 	"time"
 )
@@ -13,7 +12,7 @@ func logRequest(handler ApiHandler) func(http.ResponseWriter, *http.Request) {
 
 		logger.Log("%s %s", r.Method, r.URL)
 		data, err := handler(r)
-		api.SendResponse(w, data, err)
+		SendResponse(w, data, err)
 
 		duration := time.Since(startTime)
 		logger.Log("%s %s took %dms", r.Method, r.URL, duration.Milliseconds())
