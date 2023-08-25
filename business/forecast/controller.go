@@ -13,10 +13,14 @@ import (
 	"time"
 )
 
-const tsLayout = "2006-01-02T15:04:05.0000000Z"
+const TS_LAYOUT = "2006-01-02T15:04:05.0000000Z"
+
+var (
+	ErrSolcastTooManyCalls = errors.New("Cannot call solcast api (Too many calls today)")
+)
 
 func constructForcast(apiForecast SolcastApiForecast) (*Forecast, error) {
-	parsedTime, err := time.Parse(tsLayout, apiForecast.PeriodEnd)
+	parsedTime, err := time.Parse(TS_LAYOUT, apiForecast.PeriodEnd)
 	if err != nil {
 		return nil, err
 	}
@@ -35,7 +39,7 @@ func readForecastsFromApi() (*ForecastResponse, error) {
 	canCall, remainingCalls := CanCall()
 
 	if !canCall {
-		return nil, errors.New("Cannot call solcast api (Too many calls today)")
+		return nil, ErrSolcastTooManyCalls
 	}
 
 	body, err := fetchForecasts()

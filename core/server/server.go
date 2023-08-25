@@ -12,6 +12,12 @@ import (
 
 const DEFAULT_API_PATH = "/api/"
 
+var (
+	ErrMissingParamTo   = errors.New("Missing required parameter to")
+	ErrMissingParamFrom = errors.New("Missing required parameter from")
+	ErrMethodNotAllowed = errors.New("Method not allowed")
+)
+
 type ApiHandler func(r *http.Request) (any, error)
 
 func defaultPathHandler(w http.ResponseWriter, r *http.Request) {
@@ -36,11 +42,11 @@ func forecastHandler(r *http.Request) (any, error) {
 	toStr := r.URL.Query().Get("to")
 
 	if toStr == "" {
-		return nil, errors.New("Missing required parameter to")
+		return nil, ErrMissingParamTo
 	}
 
 	if fromStr == "" {
-		return nil, errors.New("Missing required parameter from")
+		return nil, ErrMissingParamFrom
 	}
 
 	return forecast.ReadForecastsFromDb(fromStr, toStr)
@@ -56,7 +62,7 @@ func updateForecastHandler(r *http.Request) (any, error) {
 		return forecast.UpdateForecasts(r)
 	}
 
-	return nil, errors.New("Method not allowed")
+	return nil, ErrMethodNotAllowed
 }
 
 func eventHandler(r *http.Request) (any, error) {
