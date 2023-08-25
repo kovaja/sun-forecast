@@ -40,25 +40,11 @@ func getPeriodEnd(record HaHistoryRecord) time.Time {
 	return result
 }
 
-func appendUpdate(
-	updates []ForecastUpdate,
-	updated bool,
-	currentPeriodEnd *time.Time,
-	average float64,
-	count int,
-	lastChanged *time.Time,
-) []ForecastUpdate {
+func appendUpdate(updates []ForecastUpdate, updated bool, newUpdate ForecastUpdate) []ForecastUpdate {
 	// add the last one period
 	if !updated {
-		logger.Log("Will not add %v between updates as no change was made", currentPeriodEnd)
+		logger.Log("Will not add %v between updates as no change was made", newUpdate.PeriodEnd)
 		return updates
-	}
-
-	newUpdate := ForecastUpdate{
-		PeriodEnd:    *currentPeriodEnd,
-		Actual:       average,
-		ActualCount:  count,
-		LastActualAt: *lastChanged,
 	}
 
 	logger.Log("Adding new update %v", newUpdate)
@@ -95,7 +81,16 @@ func ComputeUpdates(db *sql.DB, records []HaHistoryRecord) []ForecastUpdate {
 		} else {
 			if currentPeriodEnd == nil || currentPeriodEnd.UnixMicro() != periodEnd.UnixMicro() {
 				if currentPeriodEnd != nil {
-					updates = appendUpdate(updates, updated, currentPeriodEnd, average, count, lastChanged)
+					updates = appendUpdate(
+						updates,
+						updated,
+						ForecastUpdate{
+							PeriodEnd:    *currentPeriodEnd,
+							Actual:       average,
+							ActualCount:  count,
+							LastActualAt: *lastChanged,
+						},
+					)
 				}
 
 				currentPeriodEnd = &periodEnd
@@ -135,7 +130,16 @@ func ComputeUpdates(db *sql.DB, records []HaHistoryRecord) []ForecastUpdate {
 		}
 	}
 
-	updates = appendUpdate(updates, updated, currentPeriodEnd, average, count, lastChanged)
+	updates = appendUpdate(
+		updates,
+		updated,
+		ForecastUpdate{
+			PeriodEnd:    *currentPeriodEnd,
+			Actual:       average,
+			ActualCount:  count,
+			LastActualAt: *lastChanged,
+		},
+	)
 	logger.Log("Computed updates for %d periods, %d records skipped", len(updates), skippedRecords)
 	return updates
 }
