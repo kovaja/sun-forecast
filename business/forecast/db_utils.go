@@ -6,6 +6,12 @@ import (
 	"time"
 )
 
+func getExistingForecastLoader(db *sql.DB) func(time.Time) *Forecast {
+	return func(perEnd time.Time) *Forecast {
+		return getExistingForecast(db, perEnd)
+	}
+}
+
 func getExistingForecast(db *sql.DB, timestamp time.Time) *Forecast {
 	query := "SELECT * FROM forecasts WHERE period_end = $1"
 

@@ -90,3 +90,87 @@ func TestAppendUpdate(t *testing.T) {
 		})
 	}
 }
+
+func TestComputeUpdatesForOneRecordAndAlreadyTouchedForecast(t *testing.T) {
+	periodEnd := time.Date(2023, time.August, 25, 23, 00, 00, 00, time.UTC)
+
+	haRecordMock := HaHistoryRecord{
+		LastChanged: time.Date(2023, time.August, 25, 22, 38, 01, 00, time.UTC),
+		State:       "163",
+	}
+
+	loaderMock := func(t time.Time) *Forecast {
+		actual := float64(2155)
+		lastActualAt := time.Date(2023, time.August, 25, 22, 36, 00, 00, time.UTC)
+		return &Forecast{
+			Id:           1,
+			PeriodEnd:    periodEnd,
+			Value:        2645,
+			Actual:       &actual,
+			ActualCount:  5,
+			LastActualAt: &lastActualAt,
+		}
+	}
+
+	updates := ComputeUpdates(loaderMock, []HaHistoryRecord{haRecordMock})
+
+	if len(updates) != 1 {
+		t.Errorf("Expected 1 updates, got %d", len(updates))
+		return
+	}
+
+	expectedUpdate := ForecastUpdate{
+		PeriodEnd:    periodEnd,
+		Actual:       (2155*5 + 163) / 6, //cummulative average
+		ActualCount:  5 + 1,
+		LastActualAt: haRecordMock.LastChanged,
+	}
+
+	if !reflect.DeepEqual(updates[0], expectedUpdate) {
+		t.Errorf("Unexpected data in update. Expected %v, got %v", expectedUpdate, updates[0])
+	}
+}
+
+func TestComputeUpdatesForTwoRecordsAndUntouchedForecast(t *testing.T) {
+	periodEnd := time.Date(2023, time.August, 25, 23, 00, 00, 00, time.UTC)
+
+	haRecordsMock := []HaHistoryRecord{
+		{
+			LastChanged: time.Date(2023, time.August, 25, 22, 38, 01, 00, time.UTC),
+			State:       "163",
+		},
+		{
+			LastChanged: time.Date(2023, time.August, 25, 22, 39, 01, 00, time.UTC),
+			State:       "250",
+		},
+	}
+
+	loaderMock := func(t time.Time) *Forecast {
+		return &Forecast{
+			Id:           1,
+			PeriodEnd:    periodEnd,
+			Value:        2645,
+			Actual:       nil,
+			ActualCount:  0,
+			LastActualAt: nil,
+		}
+	}
+
+	updates := ComputeUpdates(loaderMock, haRecordsMock)
+
+	if len(updates) != 1 {
+		t.Errorf("Expected 1 updates, got %d", len(updates))
+		return
+	}
+
+	expectedUpdate := ForecastUpdate{
+		PeriodEnd:    periodEnd,
+		Actual:       206.5,
+		ActualCount:  2,
+		LastActualAt: haRecordsMock[1].LastChanged,
+	}
+
+	if !reflect.DeepEqual(updates[0], expectedUpdate) {
+		t.Errorf("Unexpected data in update. Expected %v, got %v", expectedUpdate, updates[0])
+	}
+}

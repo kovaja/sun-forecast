@@ -17,3 +17,6 @@ internal_readme.md
 
 # static folder where frontent will get built
 static
+
+# coverage files
+*.out

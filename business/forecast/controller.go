@@ -237,7 +237,7 @@ func UpdateForecasts(r *http.Request) ([]ForecastUpdate, error) {
 	logger.Log("Received update data %d", len(records))
 
 	db := db.GetDb()
-	updates := ComputeUpdates(db, records)
+	updates := ComputeUpdates(getExistingForecastLoader(db), records)
 	updated := 0
 
 	for _, update := range updates {

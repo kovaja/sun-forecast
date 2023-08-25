@@ -1,7 +1,6 @@
 package forecast
 
 import (
-	"database/sql"
 	"kovaja/sun-forecast/utils/logger"
 	"strconv"
 	"time"
@@ -61,7 +60,7 @@ func appendUpdate(updates []ForecastUpdate, updated bool, newUpdate ForecastUpda
 		need to recognize period end - that is next half an hour
 		need to convert state string to float64
 */
-func ComputeUpdates(db *sql.DB, records []HaHistoryRecord) []ForecastUpdate {
+func ComputeUpdates(loadExistingForecast func(time.Time) *Forecast, records []HaHistoryRecord) []ForecastUpdate {
 	skippedRecords := 0
 	var updates []ForecastUpdate
 	var currentPeriodEnd *time.Time = nil
@@ -93,7 +92,7 @@ func ComputeUpdates(db *sql.DB, records []HaHistoryRecord) []ForecastUpdate {
 				}
 
 				currentPeriodEnd = &periodEnd
-				existingForecast := getExistingForecast(db, *currentPeriodEnd)
+				existingForecast := loadExistingForecast(*currentPeriodEnd)
 				updated = false
 				if existingForecast != nil {
 					lastChanged = existingForecast.LastActualAt
