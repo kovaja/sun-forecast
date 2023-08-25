@@ -2,7 +2,7 @@ package forecast
 
 import (
 	"fmt"
-	"kovaja/sun-forecast/httpClient"
+	"kovaja/sun-forecast/httpclient"
 	"kovaja/sun-forecast/logger"
 	"kovaja/sun-forecast/utils"
 )
@@ -24,7 +24,7 @@ func fetchForecasts() (*SolcastApiForcastResponse, error) {
 	}
 
 	var body SolcastApiForcastResponse
-	err = httpClient.GetJsonWithAuth(url, apiKey, &body)
+	err = httpclient.GetJsonWithAuth(url, apiKey, &body)
 
 	if err != nil {
 		if dev == "1" {
