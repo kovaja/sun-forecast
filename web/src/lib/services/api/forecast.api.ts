@@ -11,12 +11,5 @@ export async function fetchForecast(windowSizeHrs: number, windowMiddle: Date): 
     to: new Date(nowTs + offset).toISOString()
   }
 
-  const forecasts: Forecast[] = await fetchJsonData<Forecast[]>('forecast', params)
-
-  // temporary, TODO return from, to from backend
-  return {
-    data: forecasts,
-    from: params.from,
-    to: params.to
-  }
+  return await fetchJsonData<ForecastResponse>('forecast', params)
 }

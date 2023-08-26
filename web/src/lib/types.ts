@@ -23,7 +23,7 @@ export interface Forecast {
 }
 
 export interface ForecastResponse {
-  data: Forecast[],
+  forecasts: Forecast[];
   from: string;
   to: string;
 }

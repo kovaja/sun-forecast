@@ -14,7 +14,7 @@
     const response = await fetchForecast(windowSize, windowMiddle)
     if (response) {
       setReadableWindowBoundaries(response.from, response.to)
-      plotGraph(response.data)
+      plotGraph(response.forecasts)
     }
   }
 

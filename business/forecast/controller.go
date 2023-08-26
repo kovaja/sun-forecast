@@ -39,7 +39,7 @@ func constructForcast(apiForecast SolcastApiForecast) (*Forecast, error) {
 	return &forecast, nil
 }
 
-func (ctl ForecastController) readForecastsFromApi() (*ForecastResponse, error) {
+func (ctl ForecastController) readForecastsFromApi() ([]Forecast, error) {
 	canCall, remainingCalls := ctl.counter.CanCall()
 
 	if !canCall {
@@ -62,12 +62,8 @@ func (ctl ForecastController) readForecastsFromApi() (*ForecastResponse, error) 
 		}
 	}
 
-	response := ForecastResponse{
-		RemainingCalls: remainingCalls,
-		Forecasts:      forcasts,
-	}
-
-	return &response, nil
+	logger.Log("Read %d forecasts from api. Calls remaining: %d", len(forcasts), remainingCalls)
+	return forcasts, nil
 }
 
 func (ctl ForecastController) ConsumeForecasts() error {
@@ -80,7 +76,7 @@ func (ctl ForecastController) ConsumeForecasts() error {
 	updated := 0
 	skipped := 0
 
-	for _, forecast := range data.Forecasts {
+	for _, forecast := range data {
 		isExisting, id, value := ctl.repository.IsExistingForecastByPeriodEnd(forecast.PeriodEnd)
 
 		if isExisting {
@@ -127,7 +123,7 @@ func parseReadQuery(fromStr string, toStr string) (*time.Time, *time.Time, error
 	return &from, &to, nil
 }
 
-func (ctl ForecastController) GetForecasts(fromStr string, toStr string) (*[]Forecast, error) {
+func (ctl ForecastController) GetForecasts(fromStr string, toStr string) (*ForecastResponse, error) {
 	logger.Log("Read forecasts from DB: from %s to %s", fromStr, toStr)
 
 	from, to, err := parseReadQuery(fromStr, toStr)
@@ -135,7 +131,16 @@ func (ctl ForecastController) GetForecasts(fromStr string, toStr string) (*[]For
 		return nil, utils.CustomError("Failed to parse query params", err)
 	}
 
-	return ctl.repository.ReadForecasts(from, to)
+	forecasts, err := ctl.repository.ReadForecasts(from, to)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ForecastResponse{
+		Forecasts: *forecasts,
+		From:      *from,
+		To:        *to,
+	}, nil
 }
 
 func (ctl ForecastController) UpdateForecasts(r *http.Request) ([]ForecastUpdate, error) {

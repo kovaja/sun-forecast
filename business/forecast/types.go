@@ -24,8 +24,9 @@ type Forecast struct {
 }
 
 type ForecastResponse struct {
-	RemainingCalls int        `json:"remainingCalls"`
-	Forecasts      []Forecast `json:"forecasts"`
+	Forecasts []Forecast `json:"forecasts"`
+	From      time.Time  `json:"from"`
+	To        time.Time  `json:"to"`
 }
 
 type HaHistoryRecord struct {
