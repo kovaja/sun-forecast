@@ -77,6 +77,7 @@ func ComputeUpdates(loadExistingForecast func(time.Time) *Forecast, records []Ha
 
 		if err != nil {
 			logger.LogError("Failed to convert actual", err)
+			skippedRecords += 1
 		} else {
 			if currentPeriodEnd == nil || currentPeriodEnd.UnixMicro() != periodEnd.UnixMicro() {
 				if currentPeriodEnd != nil {
@@ -131,16 +132,19 @@ func ComputeUpdates(loadExistingForecast func(time.Time) *Forecast, records []Ha
 		}
 	}
 
-	updates = appendUpdate(
-		updates,
-		updated,
-		ForecastUpdate{
-			PeriodEnd:    *currentPeriodEnd,
-			Actual:       average,
-			ActualCount:  count,
-			LastActualAt: *lastChanged,
-		},
-	)
+	if updated {
+		updates = appendUpdate(
+			updates,
+			updated,
+			ForecastUpdate{
+				PeriodEnd:    *currentPeriodEnd,
+				Actual:       average,
+				ActualCount:  count,
+				LastActualAt: *lastChanged,
+			},
+		)
+	}
+
 	logger.Log("Computed updates for %d periods, %d records skipped", len(updates), skippedRecords)
 	return updates
 }
