@@ -143,3 +143,27 @@ func ComputeUpdates(loadExistingForecast func(time.Time) *Forecast, records []Ha
 	logger.Log("Computed updates for %d periods, %d records skipped", len(updates), skippedRecords)
 	return updates
 }
+
+/*
+	  For given collection of forecasts it returns time from and to.
+		From is start of period of first forecast
+		To is end of period of last forecast
+*/
+func GetForecastsRange(forecasts []Forecast) (*time.Time, *time.Time) {
+	if len(forecasts) == 0 {
+		// we have no forecasts return nil
+		return nil, nil
+	}
+
+	firstForecast := forecasts[0]
+	// subtract 30 minutes to get us to period start
+	periodStart := firstForecast.PeriodEnd.Add(time.Minute * -time.Duration(30))
+
+	if len(forecasts) == 1 {
+		return &periodStart, &firstForecast.PeriodEnd
+	}
+
+	lastForecast := forecasts[len(forecasts)-1]
+
+	return &periodStart, &lastForecast.PeriodEnd
+}
