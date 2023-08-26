@@ -4,8 +4,6 @@ import (
 	"database/sql"
 	"errors"
 	app "kovaja/sun-forecast/business"
-	"kovaja/sun-forecast/business/events"
-	"kovaja/sun-forecast/business/forecast"
 	"kovaja/sun-forecast/business/weather"
 	"kovaja/sun-forecast/utils"
 	"kovaja/sun-forecast/utils/logger"
@@ -22,15 +20,16 @@ var (
 
 type ApiHandler func(r *http.Request) (any, error)
 
-var forecastController forecast.ForecastController
-var eventController events.EventController
+type Server struct {
+	appControllers app.AppControllers
+}
 
-func defaultPathHandler(w http.ResponseWriter, r *http.Request) {
+func (s Server) defaultPathHandler(w http.ResponseWriter, r *http.Request) {
 	logger.Log("Serving index.html %s", r.URL)
 	http.ServeFile(w, r, "static/index.html")
 }
 
-func defaultApiHandler(r *http.Request) (any, error) {
+func (s Server) defaultApiHandler(r *http.Request) (any, error) {
 	return nil, nil
 }
 
@@ -42,7 +41,7 @@ func weatherForecastHandler(r *http.Request) (any, error) {
 	return weather.GetForecast()
 }
 
-func forecastHandler(r *http.Request) (any, error) {
+func (s Server) forecastHandler(r *http.Request) (any, error) {
 	fromStr := r.URL.Query().Get("from")
 	toStr := r.URL.Query().Get("to")
 
@@ -54,34 +53,24 @@ func forecastHandler(r *http.Request) (any, error) {
 		return nil, ErrMissingParamFrom
 	}
 
-	return forecastController.GetForecasts(fromStr, toStr)
+	return s.appControllers.ForecastCtl.GetForecasts(fromStr, toStr)
 }
 
-func consumeForecastHandler(r *http.Request) (any, error) {
-	err := forecastController.ConsumeForecasts()
+func (s Server) consumeForecastHandler(r *http.Request) (any, error) {
+	err := s.appControllers.ForecastCtl.ConsumeForecasts()
 	return nil, err
 }
 
-func updateForecastHandler(r *http.Request) (any, error) {
+func (s Server) updateForecastHandler(r *http.Request) (any, error) {
 	if r.Method == http.MethodPost {
-		return forecastController.UpdateForecasts(r)
+		return s.appControllers.ForecastCtl.UpdateForecasts(r)
 	}
 
 	return nil, ErrMethodNotAllowed
 }
 
-func eventHandler(r *http.Request) (any, error) {
-	return eventController.ReadEvents()
-}
-
-var routes map[string]ApiHandler = map[string]ApiHandler{
-	"forecast":         forecastHandler,
-	"weather":          currentWeatherHandler,
-	"weather/forecast": weatherForecastHandler,
-	"forecast/consume": consumeForecastHandler,
-	"forecast/update":  updateForecastHandler,
-	"event":            eventHandler,
-	"":                 defaultApiHandler,
+func (s Server) eventHandler(r *http.Request) (any, error) {
+	return s.appControllers.EventCtl.ReadEvents()
 }
 
 func InitializeServer(db *sql.DB) error {
@@ -91,17 +80,26 @@ func InitializeServer(db *sql.DB) error {
 		return utils.CustomError("Failed to load port env variable", err)
 	}
 
-	// this should be better
-	appControllers := app.InitializeApp(db)
-	eventController = appControllers.EventCtl
-	forecastController = appControllers.ForecastCtl
+	server := Server{
+		appControllers: app.InitializeApp(db),
+	}
+
+	var routes map[string]ApiHandler = map[string]ApiHandler{
+		"forecast":         server.forecastHandler,
+		"weather":          currentWeatherHandler,
+		"weather/forecast": weatherForecastHandler,
+		"forecast/consume": server.consumeForecastHandler,
+		"forecast/update":  server.updateForecastHandler,
+		"event":            server.eventHandler,
+		"":                 server.defaultApiHandler,
+	}
 
 	for path, handler := range routes {
 		logger.Log("Register handler %s/", path)
 		http.HandleFunc(DEFAULT_API_PATH+path+"/", logRequest(handler))
 	}
 
-	http.HandleFunc("/", defaultPathHandler)
+	http.HandleFunc("/", server.defaultPathHandler)
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
 	logger.Log("Server will listen on port %s", (":" + port))
