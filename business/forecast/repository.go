@@ -109,3 +109,9 @@ func (repository ForecastRepository) createForcast(forecast *Forecast) error {
 
 	return nil
 }
+
+func InitializeRepository(db *sql.DB) ForecastRepository {
+	return ForecastRepository{
+		db: db,
+	}
+}

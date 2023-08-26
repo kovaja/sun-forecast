@@ -1,7 +1,6 @@
 package events
 
 import (
-	"database/sql"
 	"fmt"
 	"kovaja/sun-forecast/utils/logger"
 	"time"
@@ -31,10 +30,7 @@ func (ctl EventController) ReadEvents() (*[]AppEvent, error) {
 	return ctl.repository.ReadEvents()
 }
 
-func InitializeController(db *sql.DB) EventController {
-	repository := EventRepository{
-		db: db,
-	}
+func InitializeController(repository EventRepository) EventController {
 	return EventController{
 		repository: repository,
 	}

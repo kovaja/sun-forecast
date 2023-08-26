@@ -1,7 +1,6 @@
 package forecast
 
 import (
-	"database/sql"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -168,15 +167,11 @@ func (ctl ForecastController) UpdateForecasts(r *http.Request) ([]ForecastUpdate
 	return updates, nil
 }
 
-func InitializeController(db *sql.DB, eventController events.EventController) ForecastController {
-	repository := ForecastRepository{
-		db: db,
-	}
-
-	counterRepository := RemainingCallRepository{
-		db: db,
-	}
-
+func InitializeController(
+	repository ForecastRepository,
+	counterRepository RemainingCallRepository,
+	eventController events.EventController,
+) ForecastController {
 	counter := InitializeCounter(counterRepository)
 
 	return ForecastController{

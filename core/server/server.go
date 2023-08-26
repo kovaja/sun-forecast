@@ -3,6 +3,7 @@ package server
 import (
 	"database/sql"
 	"errors"
+	app "kovaja/sun-forecast/business"
 	"kovaja/sun-forecast/business/events"
 	"kovaja/sun-forecast/business/forecast"
 	"kovaja/sun-forecast/business/weather"
@@ -90,8 +91,10 @@ func InitializeServer(db *sql.DB) error {
 		return utils.CustomError("Failed to load port env variable", err)
 	}
 
-	eventController = events.InitializeController(db)
-	forecastController = forecast.InitializeController(db, eventController)
+	// this should be better
+	appControllers := app.InitializeApp(db)
+	eventController = appControllers.EventCtl
+	forecastController = appControllers.ForecastCtl
 
 	for path, handler := range routes {
 		logger.Log("Register handler %s/", path)

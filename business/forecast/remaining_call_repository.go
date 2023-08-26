@@ -40,3 +40,9 @@ func (repository RemainingCallRepository) UpdateRemainingCalls(todayKey string, 
 	logger.Log("Setting remaining calls for %s as %d", todayKey, remainingCalls)
 	return err
 }
+
+func InitializeRemainigCallRepository(db *sql.DB) RemainingCallRepository {
+	return RemainingCallRepository{
+		db: db,
+	}
+}

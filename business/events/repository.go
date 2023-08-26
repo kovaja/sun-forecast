@@ -37,3 +37,9 @@ func (repository EventRepository) ReadEvents() (*[]AppEvent, error) {
 
 	return &events, nil
 }
+
+func InitializeRepository(db *sql.DB) EventRepository {
+	return EventRepository{
+		db: db,
+	}
+}
