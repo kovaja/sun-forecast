@@ -15,12 +15,12 @@ func getPeriodEnd(record HaHistoryRecord) time.Time {
 	var updatedTime time.Time
 	if minuteDiff <= 30 {
 		// there is less than 30 minutes till full hour add the rest to the time
-		// logger.Log("Adding time till full hour %d]",fullHourDiff)
+		// logger.Log("Adding time till full hour %d",fullHourDiff)
 		updatedTime = inputTime.Add(time.Minute * time.Duration(minuteDiff))
 	} else {
 		// there is more than 30 minutes till full hour, add only the rest till half hour
 		// 43 - 30 = 13 | 13.17 => 13.30
-		// logger.Log("Adding time till half hour %d]",fullHourDiff-30)
+		// logger.Log("Adding time till half hour %d",fullHourDiff-30)
 		updatedTime = inputTime.Add(time.Minute * time.Duration(minuteDiff-30))
 	}
 
