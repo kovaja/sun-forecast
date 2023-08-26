@@ -14,6 +14,7 @@ import (
 
 type ForecastController struct {
 	repository *ForecastRepository
+	eventCtl   *events.EventController
 }
 
 const TS_LAYOUT = "2006-01-02T15:04:05.0000000Z"
@@ -38,7 +39,7 @@ func constructForcast(apiForecast SolcastApiForecast) (*Forecast, error) {
 	return &forecast, nil
 }
 
-func readForecastsFromApi() (*ForecastResponse, error) {
+func (ctl ForecastController) readForecastsFromApi() (*ForecastResponse, error) {
 	canCall, remainingCalls := CanCall()
 
 	if !canCall {
@@ -55,7 +56,7 @@ func readForecastsFromApi() (*ForecastResponse, error) {
 		forecast, err := constructForcast(apiForecast)
 
 		if err != nil {
-			events.LogEvent("Failed to construct forecast %v. With error: %v", apiForecast, err)
+			ctl.eventCtl.LogEvent("Failed to construct forecast %v. With error: %v", apiForecast, err)
 		} else {
 			forcasts = append(forcasts, *forecast)
 		}
@@ -70,7 +71,7 @@ func readForecastsFromApi() (*ForecastResponse, error) {
 }
 
 func (ctl ForecastController) ConsumeForecasts() error {
-	data, err := readForecastsFromApi()
+	data, err := ctl.readForecastsFromApi()
 	if err != nil {
 		return err
 	}
@@ -101,7 +102,7 @@ func (ctl ForecastController) ConsumeForecasts() error {
 		}
 	}
 
-	events.LogEvent("Updated forecasts, %d added, %d updated, %d skipped", added, updated, skipped)
+	ctl.eventCtl.LogEvent("Updated forecasts, %d added, %d updated, %d skipped", added, updated, skipped)
 	return nil
 }
 
@@ -166,12 +167,13 @@ func (ctl ForecastController) UpdateForecasts(r *http.Request) ([]ForecastUpdate
 	return updates, nil
 }
 
-func InitializeController(db *sql.DB) ForecastController {
+func InitializeController(db *sql.DB, eventController events.EventController) ForecastController {
 	repository := ForecastRepository{
 		db: db,
 	}
 
 	return ForecastController{
 		repository: &repository,
+		eventCtl:   &eventController,
 	}
 }

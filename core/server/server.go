@@ -22,6 +22,7 @@ var (
 type ApiHandler func(r *http.Request) (any, error)
 
 var forecastController forecast.ForecastController
+var eventController events.EventController
 
 func defaultPathHandler(w http.ResponseWriter, r *http.Request) {
 	logger.Log("Serving index.html %s", r.URL)
@@ -89,7 +90,8 @@ func InitializeServer(db *sql.DB) error {
 		return utils.CustomError("Failed to load port env variable", err)
 	}
 
-	forecastController = forecast.InitializeController(db)
+	eventController = events.InitializeController(db)
+	forecastController = forecast.InitializeController(db, eventController)
 
 	for path, handler := range routes {
 		logger.Log("Register handler %s/", path)
