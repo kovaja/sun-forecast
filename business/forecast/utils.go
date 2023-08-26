@@ -1,6 +1,7 @@
 package forecast
 
 import (
+	"kovaja/sun-forecast/business/forecast/solcast"
 	"kovaja/sun-forecast/utils/logger"
 	"strconv"
 	"time"
@@ -166,4 +167,41 @@ func GetForecastsRange(forecasts []Forecast) (*time.Time, *time.Time) {
 	lastForecast := forecasts[len(forecasts)-1]
 
 	return &periodStart, &lastForecast.PeriodEnd
+}
+
+func ParseReadQuery(fromStr string, toStr string) (*time.Time, *time.Time, error) {
+	fromQueryTime, err := time.Parse(time.RFC3339, fromStr)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	toQueryTime, err := time.Parse(time.RFC3339, toStr)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	// from will stay the same, period_end >= from will cover that time
+	// it will be the first half an hour after requested time
+	from := fromQueryTime
+	// for 16:15 we need add 30 minutes to get 16:45, that would return 16:30 period_end
+	// then we can query period_end <= to
+	to := toQueryTime.Add(time.Minute * time.Duration(30))
+
+	return &from, &to, nil
+}
+
+func ConstructForcast(apiForecast solcast.SolcastApiForecast) (*Forecast, error) {
+	parsedTime, err := time.Parse(TS_LAYOUT, apiForecast.PeriodEnd)
+	if err != nil {
+		return nil, err
+	}
+
+	forecast := Forecast{
+		Id:        -1,
+		PeriodEnd: parsedTime,
+		Value:     apiForecast.PvEstimate * 1000, // convert 1.56kw na 1560w
+		Actual:    nil,
+	}
+
+	return &forecast, nil
 }

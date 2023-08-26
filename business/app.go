@@ -2,6 +2,7 @@ package app
 
 import (
 	"database/sql"
+	"kovaja/sun-forecast/business/counter"
 	"kovaja/sun-forecast/business/events"
 	"kovaja/sun-forecast/business/forecast"
 )
@@ -18,9 +19,10 @@ func initializeEventController(db *sql.DB) events.EventController {
 
 func initializeForecastController(db *sql.DB, eventCtl events.EventController) forecast.ForecastController {
 	repository := forecast.InitializeRepository(db)
-	counterRepository := forecast.InitializeRemainigCallRepository(db)
+	counterRepository := counter.InitializeRemainigCallRepository(db)
+	counter := counter.InitializeCounter(counterRepository)
 
-	return forecast.InitializeController(repository, counterRepository, eventCtl)
+	return forecast.InitializeController(repository, counter, eventCtl)
 }
 
 func InitializeApp(db *sql.DB) AppControllers {

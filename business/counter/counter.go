@@ -1,4 +1,4 @@
-package forecast
+package counter
 
 import (
 	"kovaja/sun-forecast/utils/logger"

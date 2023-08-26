@@ -1,4 +1,4 @@
-package forecast
+package solcast
 
 import (
 	"fmt"
@@ -14,7 +14,7 @@ func getUrl() (string, error) {
 	return utils.ReturnStringResultOrError(url, err)
 }
 
-func fetchForecasts() (*SolcastApiForcastResponse, error) {
+func FetchForecasts() (*SolcastApiForcastResponse, error) {
 	apiKey, err := utils.GetEnvVariable("SOLCAST_API_KEY")
 	dev, err := utils.GetEnvVariable("DEV")
 

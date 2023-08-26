@@ -4,16 +4,17 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"kovaja/sun-forecast/business/counter"
 	"kovaja/sun-forecast/business/events"
+	"kovaja/sun-forecast/business/forecast/solcast"
 	"kovaja/sun-forecast/utils"
 	"kovaja/sun-forecast/utils/logger"
 	"net/http"
-	"time"
 )
 
 type ForecastController struct {
 	repository *ForecastRepository
-	counter    *Counter
+	counter    *counter.Counter
 	eventCtl   *events.EventController
 }
 
@@ -23,22 +24,6 @@ var (
 	ErrSolcastTooManyCalls = errors.New("Cannot call solcast api (Too many calls today)")
 )
 
-func constructForcast(apiForecast SolcastApiForecast) (*Forecast, error) {
-	parsedTime, err := time.Parse(TS_LAYOUT, apiForecast.PeriodEnd)
-	if err != nil {
-		return nil, err
-	}
-
-	forecast := Forecast{
-		Id:        -1,
-		PeriodEnd: parsedTime,
-		Value:     apiForecast.PvEstimate * 1000, // convert 1.56kw na 1560w
-		Actual:    nil,
-	}
-
-	return &forecast, nil
-}
-
 func (ctl ForecastController) readForecastsFromApi() ([]Forecast, error) {
 	canCall, remainingCalls := ctl.counter.CanCall()
 
@@ -46,14 +31,14 @@ func (ctl ForecastController) readForecastsFromApi() ([]Forecast, error) {
 		return nil, ErrSolcastTooManyCalls
 	}
 
-	body, err := fetchForecasts()
+	body, err := solcast.FetchForecasts()
 	if err != nil {
 		return nil, err
 	}
 
 	var forcasts []Forecast
 	for _, apiForecast := range body.Forecasts {
-		forecast, err := constructForcast(apiForecast)
+		forecast, err := ConstructForcast(apiForecast)
 
 		if err != nil {
 			ctl.eventCtl.LogEvent("Failed to construct forecast %v. With error: %v", apiForecast, err)
@@ -102,31 +87,10 @@ func (ctl ForecastController) ConsumeForecasts() error {
 	return nil
 }
 
-func parseReadQuery(fromStr string, toStr string) (*time.Time, *time.Time, error) {
-	fromQueryTime, err := time.Parse(time.RFC3339, fromStr)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	toQueryTime, err := time.Parse(time.RFC3339, toStr)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	// from will stay the same, period_end >= from will cover that time
-	// it will be the first half an hour after requested time
-	from := fromQueryTime
-	// for 16:15 we need add 30 minutes to get 16:45, that would return 16:30 period_end
-	// then we can query period_end <= to
-	to := toQueryTime.Add(time.Minute * time.Duration(30))
-
-	return &from, &to, nil
-}
-
 func (ctl ForecastController) GetForecasts(fromStr string, toStr string) (*ForecastResponse, error) {
 	logger.Log("Read forecasts from DB: from %s to %s", fromStr, toStr)
 
-	from, to, err := parseReadQuery(fromStr, toStr)
+	from, to, err := ParseReadQuery(fromStr, toStr)
 	if err != nil {
 		return nil, utils.CustomError("Failed to parse query params", err)
 	}
@@ -176,10 +140,9 @@ func (ctl ForecastController) UpdateForecasts(r *http.Request) ([]ForecastUpdate
 
 func InitializeController(
 	repository ForecastRepository,
-	counterRepository RemainingCallRepository,
+	counter counter.Counter,
 	eventController events.EventController,
 ) ForecastController {
-	counter := InitializeCounter(counterRepository)
 
 	return ForecastController{
 		repository: &repository,

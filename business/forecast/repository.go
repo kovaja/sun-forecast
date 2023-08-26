@@ -18,7 +18,7 @@ func (repository ForecastRepository) GetExistingForecastByPeriodEnd(timestamp ti
 	var forecast Forecast
 	err := repository.db.QueryRow(query, timestamp).Scan(&forecast.Id, &forecast.PeriodEnd, &forecast.Value, &forecast.Actual, &forecast.ActualCount, &forecast.LastActualAt)
 	if err == sql.ErrNoRows {
-		logger.LogError("Did not find existing actuals", err)
+		logger.LogError("Did not find existing forecast", err)
 		return nil
 	} else if err != nil {
 		logger.LogError("Failed to load existing forecast", err)
