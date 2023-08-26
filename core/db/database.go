@@ -9,8 +9,6 @@ import (
 	_ "github.com/lib/pq"
 )
 
-var db *sql.DB
-
 func getDbConnectionString() (string, error) {
 	usr, err := utils.GetEnvVariable("DB_USR")
 	pwd, err := utils.GetEnvVariable("DB_PWD")
@@ -37,11 +35,6 @@ func InitializeDatabase() (*sql.DB, error) {
 		return nil, err
 	}
 
-	db = database
 	logger.Log("Database initialized...")
-	return db, nil
-}
-
-func GetDb() *sql.DB {
-	return db
+	return database, nil
 }

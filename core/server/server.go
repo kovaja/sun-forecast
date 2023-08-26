@@ -70,7 +70,7 @@ func updateForecastHandler(r *http.Request) (any, error) {
 }
 
 func eventHandler(r *http.Request) (any, error) {
-	return events.ReadEvents()
+	return eventController.ReadEvents()
 }
 
 var routes map[string]ApiHandler = map[string]ApiHandler{

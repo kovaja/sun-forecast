@@ -14,6 +14,7 @@ import (
 
 type ForecastController struct {
 	repository *ForecastRepository
+	counter    *Counter
 	eventCtl   *events.EventController
 }
 
@@ -40,7 +41,7 @@ func constructForcast(apiForecast SolcastApiForecast) (*Forecast, error) {
 }
 
 func (ctl ForecastController) readForecastsFromApi() (*ForecastResponse, error) {
-	canCall, remainingCalls := CanCall()
+	canCall, remainingCalls := ctl.counter.CanCall()
 
 	if !canCall {
 		return nil, ErrSolcastTooManyCalls
@@ -172,8 +173,15 @@ func InitializeController(db *sql.DB, eventController events.EventController) Fo
 		db: db,
 	}
 
+	counterRepository := RemainingCallRepository{
+		db: db,
+	}
+
+	counter := InitializeCounter(counterRepository)
+
 	return ForecastController{
 		repository: &repository,
 		eventCtl:   &eventController,
+		counter:    &counter,
 	}
 }
