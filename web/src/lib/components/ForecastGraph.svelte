@@ -80,7 +80,7 @@
         </div>
         <div class="graph-control_variable">
             <button on:click={updateWindowSizeDown}>-</button>
-            <span class="graph-control_label">
+            <span class="graph-control_label graph-control_label--no-hide">
               Window size: {readableWindowSize}
             </span>
             <button on:click={updateWindowSizeUp}>+</button>
@@ -106,7 +106,7 @@
         background-color: #A5C9CA;
         color: #395B64;
         display: flex;
-        justify-content: space-evenly;
+        justify-content: space-between;
     }
 
     .graph-control_variable {
@@ -118,5 +118,17 @@
         padding: 5px;
         border: 1px solid #395B64;
         font-size: 11px;
+        display: none;
+    }
+
+    .graph-control_label--no-hide {
+        display: block;
+    }
+
+
+    @media (min-width: 480px) {
+        .graph-control_label {
+            display: block;
+        }
     }
 </style>
