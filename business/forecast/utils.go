@@ -117,6 +117,8 @@ func ComputeUpdates(loadExistingForecast func(time.Time) *Forecast, records []Ha
 
 			if lastChanged == nil || record.LastChanged.After(*lastChanged) {
 				// cumulative average for every record value
+				// this should rather be weighted average reflecting the period of time this state lasted
+				// but so far it seems the difference is not that dramatic
 				average = (average*float64(count) + actual) / (float64(count + 1))
 				count += 1
 				lastChanged = &recordLastChanged

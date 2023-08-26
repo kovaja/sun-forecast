@@ -1,6 +1,7 @@
 package server
 
 import (
+	"database/sql"
 	"errors"
 	"kovaja/sun-forecast/business/events"
 	"kovaja/sun-forecast/business/forecast"
@@ -19,6 +20,8 @@ var (
 )
 
 type ApiHandler func(r *http.Request) (any, error)
+
+var forecastController forecast.ForecastController
 
 func defaultPathHandler(w http.ResponseWriter, r *http.Request) {
 	logger.Log("Serving index.html %s", r.URL)
@@ -49,17 +52,17 @@ func forecastHandler(r *http.Request) (any, error) {
 		return nil, ErrMissingParamFrom
 	}
 
-	return forecast.ReadForecastsFromDb(fromStr, toStr)
+	return forecastController.GetForecasts(fromStr, toStr)
 }
 
 func consumeForecastHandler(r *http.Request) (any, error) {
-	err := forecast.ConsumeForecasts()
+	err := forecastController.ConsumeForecasts()
 	return nil, err
 }
 
 func updateForecastHandler(r *http.Request) (any, error) {
 	if r.Method == http.MethodPost {
-		return forecast.UpdateForecasts(r)
+		return forecastController.UpdateForecasts(r)
 	}
 
 	return nil, ErrMethodNotAllowed
@@ -79,12 +82,14 @@ var routes map[string]ApiHandler = map[string]ApiHandler{
 	"":                 defaultApiHandler,
 }
 
-func InitializeServer() error {
+func InitializeServer(db *sql.DB) error {
 	port, err := utils.GetEnvVariable("PORT")
 
 	if err != nil {
 		return utils.CustomError("Failed to load port env variable", err)
 	}
+
+	forecastController = forecast.InitializeController(db)
 
 	for path, handler := range routes {
 		logger.Log("Register handler %s/", path)

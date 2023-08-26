@@ -24,22 +24,22 @@ func getDbConnectionString() (string, error) {
 	return fmt.Sprintf("postgres://%s:%s@%s/%s", usr, pwd, dbHost, dbName), nil
 }
 
-func InitializeDatabase() error {
+func InitializeDatabase() (*sql.DB, error) {
 	conStr, err := getDbConnectionString()
 	if err != nil {
 		logger.LogError("Failed to initialize database", err)
-		return err
+		return nil, err
 	}
 
 	database, err := sql.Open("postgres", conStr)
 	if err != nil {
 		logger.LogError("Failed to initialize database", err)
-		return err
+		return nil, err
 	}
 
 	db = database
 	logger.Log("Database initialized...")
-	return nil
+	return db, nil
 }
 
 func GetDb() *sql.DB {

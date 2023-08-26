@@ -6,12 +6,15 @@ import (
 	"errors"
 	"fmt"
 	"kovaja/sun-forecast/business/events"
-	"kovaja/sun-forecast/core/db"
 	"kovaja/sun-forecast/utils"
 	"kovaja/sun-forecast/utils/logger"
 	"net/http"
 	"time"
 )
+
+type ForecastController struct {
+	repository *ForecastRepository
+}
 
 const TS_LAYOUT = "2006-01-02T15:04:05.0000000Z"
 
@@ -66,90 +69,22 @@ func readForecastsFromApi() (*ForecastResponse, error) {
 	return &response, nil
 }
 
-func isExistingForecast(db *sql.DB, timestamp time.Time) (bool, int, float64) {
-	query := "SELECT id, value FROM forecasts WHERE period_end = $1"
-	var id int
-	var value float64
-	err := db.QueryRow(query, timestamp).Scan(&id, &value)
-	if err == sql.ErrNoRows {
-		return false, -1, -1
-	} else if err != nil {
-		logger.LogError("Failed to check forcast record", err)
-
-		// returning false to prevent duplicate records in the DB
-		// rather not store anything that have multiple records for same timestamp
-		return false, -1, -1
-	}
-
-	return true, id, value
-}
-
-func updateForcastValue(db *sql.DB, id int, value float64) error {
-	query := "UPDATE forecasts SET value = $1 WHERE id = $2"
-	result, err := db.Exec(query, value, id)
-
-	if err != nil {
-		errorMsg := fmt.Sprintf("Failed to update forecast %d.", id)
-		return utils.CustomError(errorMsg, err)
-	}
-
-	_, err = result.RowsAffected()
-	if err != nil {
-		errorMsg := fmt.Sprintf("Failed to check affected rows/ for forecast %d", id)
-		return utils.CustomError(errorMsg, err)
-	}
-
-	return nil
-}
-
-func updateForcastActual(db *sql.DB, update *ForecastUpdate) error {
-	query := "UPDATE forecasts SET actual = $1, actual_count = $2, last_actual_at = $3 WHERE period_end = $4"
-	result, err := db.Exec(query, update.Actual, update.ActualCount, update.LastActualAt, update.PeriodEnd)
-
-	if err != nil {
-		errorMsg := fmt.Sprintf("Failed to update forecast %v.", update.PeriodEnd)
-		return utils.CustomError(errorMsg, err)
-	}
-
-	rowsAffected, err := result.RowsAffected()
-	if err != nil {
-		errorMsg := fmt.Sprintf("Failed to check affected rows/ for forecast %v", update.PeriodEnd)
-		return utils.CustomError(errorMsg, err)
-	}
-
-	logger.Log("Updated forecast actual %v, rowsAffected: %d", update.PeriodEnd, rowsAffected)
-	return nil
-}
-
-func createForcast(db *sql.DB, forecast *Forecast) error {
-	query := "INSERT INTO forecasts (period_end, value) VALUES ($1, $2)"
-
-	_, err := db.Exec(query, forecast.PeriodEnd, forecast.Value)
-	if err != nil {
-		errorMsg := fmt.Sprintf("Failed to insert forecast %v. Error: %v", forecast, err)
-		return utils.CustomError(errorMsg, err)
-	}
-
-	return nil
-}
-
-func ConsumeForecasts() error {
+func (ctl ForecastController) ConsumeForecasts() error {
 	data, err := readForecastsFromApi()
 	if err != nil {
 		return err
 	}
 
-	db := db.GetDb()
 	added := 0
 	updated := 0
 	skipped := 0
 
 	for _, forecast := range data.Forecasts {
-		isExisting, id, value := isExistingForecast(db, forecast.PeriodEnd)
+		isExisting, id, value := ctl.repository.IsExistingForecastByPeriodEnd(forecast.PeriodEnd)
 
 		if isExisting {
 			if value != forecast.Value {
-				err := updateForcastValue(db, id, forecast.Value)
+				err := ctl.repository.UpdateForcastValue(id, forecast.Value)
 				if err != nil {
 					return err
 				}
@@ -158,7 +93,7 @@ func ConsumeForecasts() error {
 				skipped += 1
 			}
 		} else {
-			err := createForcast(db, &forecast)
+			err := ctl.repository.createForcast(&forecast)
 			if err != nil {
 				return err
 			}
@@ -191,7 +126,7 @@ func parseReadQuery(fromStr string, toStr string) (*time.Time, *time.Time, error
 	return &from, &to, nil
 }
 
-func ReadForecastsFromDb(fromStr string, toStr string) (*[]Forecast, error) {
+func (ctl ForecastController) GetForecasts(fromStr string, toStr string) (*[]Forecast, error) {
 	logger.Log("Read forecasts from DB: from %s to %s", fromStr, toStr)
 
 	from, to, err := parseReadQuery(fromStr, toStr)
@@ -199,30 +134,10 @@ func ReadForecastsFromDb(fromStr string, toStr string) (*[]Forecast, error) {
 		return nil, utils.CustomError("Failed to parse query params", err)
 	}
 
-	db := db.GetDb()
-	query := "SELECT id, period_end, value, actual, actual_count, last_actual_at FROM forecasts WHERE period_end >= $1 AND period_end <= $2 ORDER BY period_end ASC"
-
-	rows, err := db.Query(query, from, to)
-	if err != nil {
-		return nil, utils.CustomError("Failed to read singe forecast", err)
-	}
-	defer rows.Close()
-
-	var forecasts []Forecast
-	for rows.Next() {
-		var forecast Forecast
-		err := rows.Scan(&forecast.Id, &forecast.PeriodEnd, &forecast.Value, &forecast.Actual, &forecast.ActualCount, &forecast.LastActualAt)
-		if err != nil {
-			return nil, utils.CustomError("Failed to read single forecast", err)
-		}
-
-		forecasts = append(forecasts, forecast)
-	}
-
-	return &forecasts, nil
+	return ctl.repository.ReadForecasts(from, to)
 }
 
-func UpdateForecasts(r *http.Request) ([]ForecastUpdate, error) {
+func (ctl ForecastController) UpdateForecasts(r *http.Request) ([]ForecastUpdate, error) {
 	var data [][]HaHistoryRecord
 	err := json.NewDecoder(r.Body).Decode(&data)
 	if err != nil {
@@ -236,12 +151,11 @@ func UpdateForecasts(r *http.Request) ([]ForecastUpdate, error) {
 	records := data[0]
 	logger.Log("Received update data %d", len(records))
 
-	db := db.GetDb()
-	updates := ComputeUpdates(getExistingForecastLoader(db), records)
+	updates := ComputeUpdates(ctl.repository.GetExistingForecastByPeriodEnd, records)
 	updated := 0
 
 	for _, update := range updates {
-		err := updateForcastActual(db, &update)
+		err := ctl.repository.UpdateForcastActual(&update)
 		if err != nil {
 			return nil, err
 		}
@@ -250,4 +164,14 @@ func UpdateForecasts(r *http.Request) ([]ForecastUpdate, error) {
 
 	logger.Log("Updated forecasts with actual values, %d updated", updated)
 	return updates, nil
+}
+
+func InitializeController(db *sql.DB) ForecastController {
+	repository := ForecastRepository{
+		db: db,
+	}
+
+	return ForecastController{
+		repository: &repository,
+	}
 }

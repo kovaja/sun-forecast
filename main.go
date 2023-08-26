@@ -17,6 +17,7 @@ func checkError(err error) {
 
 func main() {
 	checkError(godotenv.Load())
-	checkError(db.InitializeDatabase())
-	checkError(server.InitializeServer())
+	db, err := db.InitializeDatabase()
+	checkError(err)
+	checkError(server.InitializeServer(db))
 }
