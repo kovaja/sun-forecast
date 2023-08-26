@@ -22,6 +22,12 @@ export interface Forecast {
   actual: number;
 }
 
+export interface ForecastResponse {
+  data: Forecast[],
+  from: string;
+  to: string;
+}
+
 export interface AppLink {
   route: string;
   name: string;

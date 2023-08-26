@@ -17,7 +17,7 @@ function isDataResponse<T>(x: unknown): x is DataResponse<T> {
   return !!x && x.hasOwnProperty('date')
 }
 
-export async function fetchJsonData<T>(path: SupportedPath, queryParams?: Record<string, string>): Promise<T | null> {
+export async function fetchJsonData<T>(path: SupportedPath, queryParams?: Record<string, any>): Promise<T | null> {
   const query = queryParams ? new URLSearchParams(queryParams).toString() : ''
   const url = getUrl(path, query)
   logger.log('Fetch', url)
