@@ -7,7 +7,6 @@
 
   const dispatch = createEventDispatcher<{ typeSelected: { type: AppEventType}}>();
   function onTypeSelected(type: AppEventType) {
-    console.log('selected type', type)
     dispatch('typeSelected', { type })
   }
 

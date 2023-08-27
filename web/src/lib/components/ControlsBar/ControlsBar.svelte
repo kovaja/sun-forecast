@@ -1,13 +1,8 @@
 <script lang="ts">
   import type { ControlsVariable } from './types';
   import { ControlsType } from './types';
-  import { beforeUpdate } from 'svelte';
 
   export let controls: ControlsVariable[];
-
-  beforeUpdate(() => {
-    console.log('update controls', controls)
-  })
 </script>
 
 <div class="controls-bar">
