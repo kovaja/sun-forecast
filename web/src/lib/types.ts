@@ -10,9 +10,15 @@ export interface ErrorResponse {
 
 export type ApiResponse<T> = DataResponse<T> | ErrorResponse
 
+export enum AppEventType {
+  ForecastConsumed,
+  ForecastUpdated,
+  AppError,
+}
 export interface AppEvent {
   message: string;
   timestamp: string;
+  type: AppEventType;
 }
 
 export interface Forecast {
@@ -23,7 +29,7 @@ export interface Forecast {
 }
 
 export interface ForecastResponse {
-  forecasts: Forecast[];
+  forecasts: Forecast[] | null;
   from: string;
   to: string;
 }

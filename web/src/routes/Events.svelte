@@ -1,50 +1,40 @@
 <script lang="ts">
   import type { AppEvent } from '../lib/types';
+  import { AppEventType } from '../lib/types';
   import { fetchEvents } from '../lib/services/api/event.api';
   import { onMount } from 'svelte';
-  import { formatDate } from '../lib/utils/date';
+  import EventsTable from '../lib/components/EventsTable.svelte';
+  import EventsControls from '../lib/components/EventsControls.svelte';
 
-  let events: AppEvent[] = []
+  let selectedType: AppEventType = AppEventType.AppError
+  let events: AppEvent[] | null = null
   let loading = true
 
-  onMount(async () => {
-    events = await fetchEvents()
+  async function loadEvents() {
+    loading = true
+    events = await fetchEvents(selectedType)
     loading = false
+  }
+
+  async function onSelectedTypeChanged(event: CustomEvent<{ type: AppEventType }>) {
+    selectedType = event.detail.type
+    await loadEvents()
+  }
+
+  onMount(async () => {
+    await loadEvents()
   })
 </script>
 
 <main>
     <h1>App events</h1>
+    <EventsControls selectedType={selectedType} on:typeSelected={onSelectedTypeChanged}/>
     <div>{loading ? 'Loading events...' : ''}</div>
-    <div class="table-container">
-        <table>
-            <thead>
-            <tr>
-                <td>Time</td>
-                <td>Message</td>
-            </tr>
-            </thead>
-            <tbody>
-            {#each events as event}
-                <tr>
-                    <td>{formatDate(event.timestamp, true)}</td>
-                    <td>{event.message}</td>
-                </tr>
-            {/each}
-            </tbody>
-        </table>
-    </div>
+    {#if !loading && events}
+
+        <EventsTable events={events}/>
+    {/if}
+    {#if !loading && !events}
+        <div>No events!</div>
+    {/if}
 </main>
-
-<style>
-    .table-container {
-        height: 80vh;
-        overflow: scroll;
-    }
-
-    td {
-        padding: 10px;
-        border: 1px solid;
-    }
-
-</style>

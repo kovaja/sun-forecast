@@ -1,4 +1,4 @@
-import type { Forecast, ForecastResponse } from '../../types';
+import type { ForecastResponse } from '../../types';
 import { fetchJsonData } from './base';
 
 const MS_HOURS = (x) => x * 60 * 60 * 1000
