@@ -15,10 +15,7 @@ func (repository EventRepository) CreateEvent(eventType int, message string) err
 	return err
 }
 
-func (repository EventRepository) ReadEvents() (*[]AppEvent, error) {
-	query := "SELECT id, timestamp, message FROM events ORDER BY timestamp DESC;"
-
-	rows, err := repository.db.Query(query)
+func processReadEvents(rows *sql.Rows, err error) (*[]AppEvent, error) {
 	if err != nil {
 		return nil, utils.CustomError("Failed to read events", err)
 	}
@@ -27,7 +24,7 @@ func (repository EventRepository) ReadEvents() (*[]AppEvent, error) {
 	var events []AppEvent
 	for rows.Next() {
 		var event AppEvent
-		err := rows.Scan(&event.Id, &event.Timestamp, &event.Message)
+		err := rows.Scan(&event.Id, &event.Timestamp, &event.Message, &event.Type)
 		if err != nil {
 			return nil, utils.CustomError("Failed to read single event", err)
 		}
@@ -36,6 +33,18 @@ func (repository EventRepository) ReadEvents() (*[]AppEvent, error) {
 	}
 
 	return &events, nil
+}
+
+func (repository EventRepository) ReadEvents() (*[]AppEvent, error) {
+	query := "SELECT id, timestamp, message, type FROM events ORDER BY timestamp DESC;"
+	rows, err := repository.db.Query(query)
+	return processReadEvents(rows, err)
+}
+
+func (repository EventRepository) ReadEventsByType(eventType int) (*[]AppEvent, error) {
+	query := "SELECT id, timestamp, message, type FROM events WHERE type = $1 ORDER BY timestamp DESC;"
+	rows, err := repository.db.Query(query, eventType)
+	return processReadEvents(rows, err)
 }
 
 func InitializeRepository(db *sql.DB) EventRepository {

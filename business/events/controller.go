@@ -3,23 +3,7 @@ package events
 import (
 	"fmt"
 	"kovaja/sun-forecast/utils/logger"
-	"time"
 )
-
-type EventType int
-
-const (
-	ForecastConsumed EventType = iota
-	ForecastUpdated
-	AppError
-)
-
-type AppEvent struct {
-	Id        int       `json:"id"`
-	Timestamp time.Time `json:"timestamp"`
-	Message   string    `json:"message"`
-	Type      EventType `json:"type"`
-}
 
 type EventController struct {
 	repository EventRepository
@@ -39,8 +23,13 @@ func (ctl EventController) LogAppError(format string, a ...any) {
 	ctl.LogEvent(AppError, format, a...)
 }
 
-func (ctl EventController) ReadEvents() (*[]AppEvent, error) {
-	return ctl.repository.ReadEvents()
+func (ctl EventController) ReadEvents(eventType string) (*[]AppEvent, error) {
+	if eventType == "" {
+		return ctl.repository.ReadEvents()
+	}
+
+	requestedEventType := getValidEventTypeQueryParam(eventType)
+	return ctl.repository.ReadEventsByType(int(requestedEventType))
 }
 
 func InitializeController(repository EventRepository) EventController {

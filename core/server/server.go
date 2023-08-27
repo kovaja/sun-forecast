@@ -70,7 +70,8 @@ func (s Server) updateForecastHandler(r *http.Request) (any, error) {
 }
 
 func (s Server) eventHandler(r *http.Request) (any, error) {
-	return s.appControllers.EventCtl.ReadEvents()
+	typeStr := r.URL.Query().Get("type")
+	return s.appControllers.EventCtl.ReadEvents(typeStr)
 }
 
 func InitializeServer(db *sql.DB) error {
