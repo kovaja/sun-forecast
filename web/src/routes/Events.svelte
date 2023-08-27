@@ -28,7 +28,7 @@
 
 <main>
     <h1>App events</h1>
-    <EventsControls selectedType={selectedType} on:typeSelected={onSelectedTypeChanged}/>
+    <EventsControls on:typeSelected={onSelectedTypeChanged}/>
     <div>{loading ? 'Loading events...' : ''}</div>
     {#if !loading && events}
 

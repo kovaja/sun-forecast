@@ -2,6 +2,9 @@
   import { onDestroy, onMount } from 'svelte';
   import { fetchForecast } from '../services/api/forecast.api';
   import { GRAPH_ROOT, plotGraph } from '../services/forecast/graph';
+  import ControlsBar from './ControlsBar/ControlsBar.svelte';
+  import type { ControlsVariable } from './ControlsBar/types';
+  import { ControlsType } from './ControlsBar/types';
 
   const halfHourMs = 30 * 60 * 1000
   let windowSize = 8
@@ -9,11 +12,20 @@
   let windowMiddle = new Date()
   let windowLeft = ''
   let windowRight = '';
+  let controls: ControlsVariable[] = [];
+
+  function updateControls(from: string, to: string) {
+    windowLeft = new Date(from).toLocaleString()
+    windowRight = new Date(to).toLocaleString()
+    const hrs = windowSize / 2
+    readableWindowSize = (Math.floor(hrs) - hrs) === 0 ? `${hrs}.5 hrs` : `${hrs + 0.5}.0 hrs`
+    recomputeControls()
+  }
 
   async function renderGraph() {
     const response = await fetchForecast(windowSize, windowMiddle)
     if (response) {
-      setReadableWindowBoundaries(response.from, response.to)
+      updateControls(response.from, response.to)
       plotGraph(response.forecasts)
     }
   }
@@ -27,40 +39,57 @@
     debounceTimeoutId = setTimeout(renderGraph, 400)
   }
 
-  async function updateWindowSizeUp() {
+  function updateWindowSizeUp() {
     windowSize += 1
-    setReadableWindowSize()
     debounceRender()
   }
 
-  async function updateWindowSizeDown() {
+  function updateWindowSizeDown() {
     windowSize -= 1
-    setReadableWindowSize()
     debounceRender()
   }
 
-  async function moveWindowMiddleInPast() {
+  function moveWindowMiddleInPast() {
     windowMiddle = new Date(windowMiddle.getTime() - halfHourMs)
     debounceRender()
   }
 
-  async function moveWindowMiddleToFuture() {
+  function moveWindowMiddleToFuture() {
     windowMiddle = new Date(windowMiddle.getTime() + halfHourMs)
     debounceRender()
   }
 
-  function setReadableWindowSize() {
-    const hrs = windowSize / 2
-    readableWindowSize = (Math.floor(hrs) - hrs) === 0 ? `${hrs}.5 hrs` : `${hrs + 0.5}.0 hrs`
-  }
-
-  function setReadableWindowBoundaries(from: string, to: string) {
-    windowLeft = new Date(from).toLocaleString()
-    windowRight = new Date(to).toLocaleString()
+  function recomputeControls() {
+    controls = [
+      {
+        type: ControlsType.Button,
+        sign: '<<',
+        label: windowLeft,
+        onClick: () => moveWindowMiddleInPast()
+      },
+      {
+        type: ControlsType.Button,
+        sign: '-',
+        label: 'Window size: ' + readableWindowSize,
+        keepLabelVisible: true,
+        onClick: () => updateWindowSizeDown()
+      },
+      {
+        type: ControlsType.Button,
+        label: '+',
+        onClick: () => updateWindowSizeUp()
+      },
+      {
+        type: ControlsType.Button,
+        sign: '>>',
+        label: windowRight,
+        labelPosition: 'left',
+        onClick: () => moveWindowMiddleToFuture()
+      }
+    ]
   }
 
   onMount(async () => {
-    setReadableWindowSize()
     await renderGraph()
     window.addEventListener('resize', renderGraph)
   })
@@ -71,26 +100,8 @@
 </script>
 
 <div>
-    <div class="graph-control">
-        <div class="graph-control_variable">
-            <button on:click={moveWindowMiddleInPast}>&lt;&lt;</button>
-            <span class="graph-control_label">
-              {windowLeft}
-            </span>
-        </div>
-        <div class="graph-control_variable">
-            <button on:click={updateWindowSizeDown}>-</button>
-            <span class="graph-control_label graph-control_label--no-hide">
-              Window size: {readableWindowSize}
-            </span>
-            <button on:click={updateWindowSizeUp}>+</button>
-        </div>
-        <div class="graph-control_variable">
-            <span class="graph-control_label">
-              {windowRight}
-            </span>
-            <button on:click={moveWindowMiddleToFuture}>&gt;&gt;</button>
-        </div>
+    <div class="graph-container__controls">
+        <ControlsBar controls={controls}/>
     </div>
     <div class={GRAPH_ROOT + ' graph-container'}></div>
 </div>
@@ -100,35 +111,7 @@
         width: 100%;
     }
 
-    .graph-control {
+    .graph-container__controls {
         margin: 0 0 0 40px;
-        padding: 2px 0;
-        background-color: #A5C9CA;
-        color: #395B64;
-        display: flex;
-        justify-content: space-between;
-    }
-
-    .graph-control_variable {
-        display: flex;
-        align-items: center;
-    }
-
-    .graph-control_label {
-        padding: 5px;
-        border: 1px solid #395B64;
-        font-size: 11px;
-        display: none;
-    }
-
-    .graph-control_label--no-hide {
-        display: block;
-    }
-
-
-    @media (min-width: 480px) {
-        .graph-control_label {
-            display: block;
-        }
     }
 </style>

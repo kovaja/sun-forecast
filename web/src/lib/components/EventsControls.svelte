@@ -1,42 +1,40 @@
 <script lang="ts">
   import { AppEventType } from '../types';
   import { createEventDispatcher } from 'svelte';
+  import ControlsBar from './ControlsBar/ControlsBar.svelte';
+  import type { ControlsVariable } from './ControlsBar/types';
+  import { ControlsType } from './ControlsBar/types';
 
   const dispatch = createEventDispatcher<{ typeSelected: { type: AppEventType}}>();
-
-  const buttons = [
-    {
-      type: AppEventType.ForecastConsumed,
-      label: 'Forecasts consumed'
-    },
-    {
-      type: AppEventType.ForecastUpdated,
-      label: 'Forecasts updated'
-    },
-    {
-      type: AppEventType.AppError,
-      label: 'App error'
-    }
-  ]
-
   function onTypeSelected(type: AppEventType) {
     console.log('selected type', type)
     dispatch('typeSelected', { type })
   }
 
-  export let selectedType: AppEventType;
+  const controls: ControlsVariable[] = [
+    {
+      type: ControlsType.Button,
+      keepLabelVisible: true,
+      label: 'Forecasts consumed',
+      onClick: () => onTypeSelected(AppEventType.ForecastConsumed)
+    },
+    {
+      type: ControlsType.Button,
+      keepLabelVisible: true,
+      label: 'Forecasts updated',
+      onClick: () => onTypeSelected(AppEventType.ForecastUpdated)
+    },
+    {
+      type: ControlsType.Button,
+      keepLabelVisible: true,
+      label: 'App error',
+      onClick: () => onTypeSelected(AppEventType.AppError)
+    }
+  ]
 </script>
 
 <div class="tabs-controls">
-    {#each buttons as button}
-        <button on:click={() => onTypeSelected(button.type)}>
-            {#if selectedType === button.type}
-                <b>{button.label}</b>
-            {:else}
-                {button.label}
-            {/if}
-        </button>
-    {/each}
+    <ControlsBar controls={controls}/>
 </div>
 
 
