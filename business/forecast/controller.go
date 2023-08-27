@@ -41,7 +41,7 @@ func (ctl ForecastController) readForecastsFromApi() ([]Forecast, error) {
 		forecast, err := ConstructForcast(apiForecast)
 
 		if err != nil {
-			ctl.eventCtl.LogEvent("Failed to construct forecast %v. With error: %v", apiForecast, err)
+			ctl.eventCtl.LogAppError("Failed to construct forecast %v. With error: %v", apiForecast, err)
 		} else {
 			forcasts = append(forcasts, *forecast)
 		}
@@ -83,7 +83,7 @@ func (ctl ForecastController) ConsumeForecasts() error {
 		}
 	}
 
-	ctl.eventCtl.LogEvent("Updated forecasts, %d added, %d updated, %d skipped", added, updated, skipped)
+	ctl.eventCtl.LogEvent(events.ForecastConsumed, "Updated forecasts, %d added, %d updated, %d skipped", added, updated, skipped)
 	return nil
 }
 
@@ -134,7 +134,12 @@ func (ctl ForecastController) UpdateForecasts(r *http.Request) ([]ForecastUpdate
 		updated += 1
 	}
 
-	logger.Log("Updated forecasts with actual values, %d updated", updated)
+	ctl.eventCtl.LogEvent(
+		events.ForecastUpdated,
+		"Updated forecasts with actual values, records %d, %d forecasts updated",
+		len(records),
+		updated,
+	)
 	return updates, nil
 }
 

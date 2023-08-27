@@ -9,9 +9,9 @@ type EventRepository struct {
 	db *sql.DB
 }
 
-func (repository EventRepository) CreateEvent(message string) error {
-	query := "INSERT INTO events (message) VALUES ($1)"
-	_, err := repository.db.Exec(query, message)
+func (repository EventRepository) CreateEvent(eventType int, message string) error {
+	query := "INSERT INTO events (message, type) VALUES ($1, $2)"
+	_, err := repository.db.Exec(query, message, eventType)
 	return err
 }
 
