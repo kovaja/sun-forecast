@@ -12,7 +12,6 @@ func GetEnvVariable(key string) (string, error) {
 
 	if err != nil {
 		logger.LogError("Failed to load env file", err)
-		// return "", err
 	}
 
 	return os.Getenv(key), nil
