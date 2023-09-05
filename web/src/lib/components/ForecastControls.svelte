@@ -8,7 +8,7 @@
   export let windowTo: string;
 
   const halfHourMs = 30 * 60 * 1000
-  let windowSize = 10
+  let windowSize = window.innerWidth < 450 ? 6 : 12
   let windowMiddle = new Date()
   let readableWindowSize = ''
   let windowLeft = ''
