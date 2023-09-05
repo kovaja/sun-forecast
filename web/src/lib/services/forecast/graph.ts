@@ -30,8 +30,14 @@ function createColPadScale() {
     .clamp(true);
 }
 
-function getContainerWidth(): number {
-  return document.querySelector(GRAPH_ROOT_SELECTOR).getBoundingClientRect().width
+function getContainerDimensions(): { width: number, height: number} {
+  const rect =  document.querySelector(GRAPH_ROOT_SELECTOR).getBoundingClientRect()
+  // 480 is breakpoint for tabs disappearing
+  const headerSpace = rect.width < 480 ? 70 : 120
+  return {
+    width: rect.width * 0.95,
+    height: window.innerHeight - headerSpace + 10
+  }
 }
 
 function createSvg(width: number, height: number, margin: Margin) {
@@ -146,11 +152,10 @@ function throwAwayOldGraph() {
 export function plotGraph(data: Forecast[]) {
   throwAwayOldGraph()
 
-  const margin = {top: 10, left: 35, right: 5, bottom: 70};
-  const width = getContainerWidth();
-  const height = 600 - margin.top - margin.bottom;
+  const margin = {top: 10, left: 35, right: 5, bottom: 40};
+  const { width, height } = getContainerDimensions();
   const rightEdge = width - margin.left - margin.right
-  const bottomEdge = height - 50
+  const bottomEdge = height - margin.top - margin.bottom
 
   const colPadScale = createColPadScale()
   COLUMN_PADDING = colPadScale(data.length)

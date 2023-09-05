@@ -46,7 +46,7 @@
     .controls-bar_label {
         padding: 5px;
         border: 1px solid #395B64;
-        font-size: 11px;
+        font-size: 7px;
         display: none;
     }
 
@@ -58,6 +58,7 @@
     @media (min-width: 480px) {
         .controls-bar_label {
             display: block;
+            font-size: 11px;
         }
     }
 </style>
