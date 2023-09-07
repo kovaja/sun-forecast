@@ -1,52 +1,35 @@
 import * as d3 from 'd3';
 import type { Forecast } from '../../types';
-import type { FadeParams } from 'svelte/transition';
-import { formatDate, formatDay, formatTime } from '../../utils/date';
+import { formatDay, formatTime } from '../../utils/date';
 import { getPeriodStart } from './domains';
-import { ACTUAL_BAR_STROKE, FORECAST_BAR_STROKE } from './constants';
+import type { Selection } from 'd3';
 
-export function createTooltip(selector: string) {
-  return d3.select(selector)
-    .append("div")
-    .style("opacity", 0)
+const MARGIN = 5
+
+export function createTooltip(svg: Selection<SVGElement, any, any, any>, y: number) {
+  return svg
+    .append("text")
+    // .style("opacity", 0)
     .attr("class", "tooltip")
-    .style("background-color", "#395B64")
-    .style("position", "absolute")
-    .style("border", "solid")
-    .style("border-width", "1px")
-    .style("border-radius", "5px")
-    .style("padding", "5px")
-    .style("top", 200)
-    .style('right', 0)
-    .style('width', '20%');
+    .attr('x', MARGIN)
+    .attr('y', y + MARGIN)
+    .attr('width', '100%')
+    .attr('height', 25)
+    .attr('fill', '#ffffff')
 }
 
 // Three function that change the tooltip when user hover / move / leave a cell
 export function getMouseOverHandler(tooltip) {
   return function () {
     const {value, actual, periodEnd}: Forecast = d3.select(this).datum() as Forecast;
-    const html = `
-     <ul>
-       <li>Time: ${formatDay(periodEnd)}</li>
-       <li>Time: ${formatTime(getPeriodStart(periodEnd).toISOString())} - ${formatTime(periodEnd)}</li>
-       <li style="color:${FORECAST_BAR_STROKE};">Forcast: ${value.toFixed(0)} (W)</li>
-       <li style="color:${ACTUAL_BAR_STROKE};">Actual: ${actual === null ? 'No data' : actual.toFixed(0) + '(W  )'}</li>
-     </ul>
-    `
+    const dateTime = `${formatDay(periodEnd)} ${formatTime(getPeriodStart(periodEnd).toISOString())} - ${formatTime(periodEnd)}`
+    const values = `Forecast ${value.toFixed(0)}W | Actual: ${actual === null ? 'No data' : actual.toFixed(0) + 'W'}`
     tooltip
-      .html(html)
-      .style("opacity", 1)
+      .text(`${dateTime}: ${values}`)
+    // .style("opacity", 1)
   }
 }
 
-// const mousemove = function(d) {
-//     tooltip
-//         .style("left", (d3.mouse(this)[0]+90) + "px") // It is important to put the +90: other wise the tooltip is exactly where the point is an it creates a weird effect
-//         .style("top", (d3.mouse(this)[1]) + "px")
-// }
 export function getMouseLeaveHandler(tooltip) {
-  return () => {
-    tooltip
-      .style("opacity", 0)
-  }
+  return () => tooltip.text('')
 }

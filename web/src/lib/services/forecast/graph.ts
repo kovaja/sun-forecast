@@ -160,16 +160,17 @@ export function plotGraph(data: Forecast[]) {
   const colPadScale = createColPadScale()
   COLUMN_PADDING = colPadScale(data.length)
 
-  const tooltip = createTooltip(GRAPH_ROOT_SELECTOR)
   const x = createXScale(rightEdge, getXDomain(data))
   const y = createYScale(bottomEdge, getYDomain(data))
   const svg = createSvg(width, height, margin)
+
   const xAxisGrid = createXGrid(x, bottomEdge, 10)
   const yAxisGrid = createYGrid(y, rightEdge, 5)
 
   appendXGrid(svg, xAxisGrid, bottomEdge)
   appendYGrid(svg, yAxisGrid)
 
+  const tooltip = createTooltip(svg, margin.top)
   appendColumns(svg, rightEdge, bottomEdge, data, x, y, tooltip, 'value', FORECAST_BAR_FILL, FORECAST_BAR_STROKE)
   appendColumns(svg, rightEdge, bottomEdge, data, x, y, tooltip, 'actual', ACTUAL_BAR_FILL, ACTUAL_BAR_STROKE)
   appendXAxis(svg, bottomEdge, x)
