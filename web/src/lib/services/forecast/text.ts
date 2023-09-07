@@ -29,4 +29,9 @@ export function appendText(svg, data, x, y, columnPadding) {
       return ''
     })
     .attr("font-size", "12px")
+    .style("opacity", 0)
+    .transition()
+    .duration(1600)
+    .style("opacity", 1)
+    .delay((_, i) => i * 50+5)
 }

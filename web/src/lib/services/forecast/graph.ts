@@ -5,7 +5,7 @@ import { createTooltip } from './tooltip';
 import { appendText } from './text';
 import { formatTime } from '../../utils/date';
 import { isSmallViewport } from '../../utils/dom';
-import { getAppendColumn } from './column';
+import { getAnimateColumns, getAppendColumn } from './column';
 
 export const GRAPH_ROOT = 'graph-root';
 const GRAPH_ROOT_SELECTOR = '.' + GRAPH_ROOT
@@ -141,8 +141,15 @@ export function plotGraph(data: Forecast[]) {
     scales: { x, y },
     data
   })
+  const animateColumnsFn = getAnimateColumns({
+    elements: { svg, tooltip },
+    dimensions: { rightEdge, bottomEdge, columnPadding: COLUMN_PADDING },
+    scales: { x, y },
+  })
   appendColumnsFn('value')
   appendColumnsFn('actual')
+  animateColumnsFn('value')
+  animateColumnsFn('actual')
 
   appendXAxis(svg, bottomEdge, x)
   appendYAxis(svg, y)

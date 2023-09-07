@@ -14,6 +14,10 @@ const STROKE_MAP: Record<ColumnProperty, string> = {
   actual: ACTUAL_BAR_STROKE
 }
 
+const SELECTOR_MAP: Record<ColumnProperty, string> = {
+  value: 'bar-value',
+  actual: 'bar-actual'
+}
 
 interface ColumnParams {
   elements: {
@@ -31,8 +35,6 @@ interface ColumnParams {
     y: D3LinearScale
   }
 }
-
-
 
 export function getAppendColumn({
  elements,
@@ -52,20 +54,19 @@ export function getAppendColumn({
     }
 
     function getYCoord(d: Forecast): number {
-      return y(d[property] ?? 0);
+      return y(0);
     }
-
-    function getHeight(d: Forecast): number {
-      const val = d[property] ?? 0
-      return val === 0 ? 0 : bottomEdge - y(val)
+    function getHeight(_: Forecast): number {
+      return 0
     }
 
     const width = (rightEdge / data.length) - columnPadding
 
-    svg.selectAll('bar-' + property)
+    svg.selectAll('.' + SELECTOR_MAP[property])
       .data(data)
       .enter()
       .append("rect")
+      .attr('class', SELECTOR_MAP[property])
       .attr("x", getXCoord)
       .attr("y", getYCoord)
       .attr("width", width)
@@ -75,5 +76,28 @@ export function getAppendColumn({
       .attr("rx", "5")
       .on("mouseover", getMouseOverHandler(tooltip))
       .on("mouseleave", getMouseLeaveHandler(tooltip))
+  }
+}
+
+export function getAnimateColumns(params: Pick<ColumnParams, 'elements' | 'scales' | 'dimensions'>): (property: ColumnProperty) => void {
+  const { svg } = params.elements
+  const { y } = params.scales
+  const { bottomEdge } = params.dimensions
+
+  return (property: ColumnProperty) => {
+    function getYCoord(d: Forecast): number {
+      return y(d[property] ?? 0);
+    }
+    function getHeight(d: Forecast): number {
+      const val = d[property] ?? 0
+      return val === 0 ? 0 : bottomEdge - y(val)
+    }
+
+    svg.selectAll('.' + SELECTOR_MAP[property])
+      .transition()
+      .duration(800)
+      .attr("y", getYCoord)
+      .attr("height", getHeight)
+      .delay((_, i) => i * 50)
   }
 }
