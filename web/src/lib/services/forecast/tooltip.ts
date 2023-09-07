@@ -1,15 +1,13 @@
 import * as d3 from 'd3';
-import type { Forecast } from '../../types';
+import type { D3Selection, Forecast } from '../../types';
 import { formatDay, formatTime } from '../../utils/date';
 import { getPeriodStart } from './domains';
-import type { Selection } from 'd3';
 
 const MARGIN = 5
 
-export function createTooltip(svg: Selection<SVGElement, any, any, any>, y: number) {
+export function createTooltip(svg: D3Selection<SVGElement>, y: number) {
   return svg
     .append("text")
-    // .style("opacity", 0)
     .attr("class", "tooltip")
     .attr('x', MARGIN)
     .attr('y', y + MARGIN)
@@ -18,8 +16,7 @@ export function createTooltip(svg: Selection<SVGElement, any, any, any>, y: numb
     .attr('fill', '#ffffff')
 }
 
-// Three function that change the tooltip when user hover / move / leave a cell
-export function getMouseOverHandler(tooltip) {
+export function getMouseOverHandler(tooltip: D3Selection<SVGTextElement>) {
   return function () {
     const {value, actual, periodEnd, actualCount}: Forecast = d3.select(this).datum() as Forecast;
     const dateTime = `${formatDay(periodEnd)} ${formatTime(getPeriodStart(periodEnd).toISOString())} - ${formatTime(periodEnd)}`
@@ -29,6 +26,6 @@ export function getMouseOverHandler(tooltip) {
   }
 }
 
-export function getMouseLeaveHandler(tooltip) {
+export function getMouseLeaveHandler(tooltip: D3Selection<SVGTextElement>) {
   return () => tooltip.text('')
 }

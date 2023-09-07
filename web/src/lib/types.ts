@@ -1,3 +1,5 @@
+import type { BaseType, Selection } from 'd3';
+
 export interface DataResponse<T> {
   date: string;
   num: number;
@@ -15,6 +17,7 @@ export enum AppEventType {
   ForecastUpdated,
   AppError,
 }
+
 export interface AppEvent {
   message: string;
   timestamp: string;
@@ -39,3 +42,5 @@ export interface AppLink {
   route: string;
   name: string;
 }
+
+export type D3Selection<T extends BaseType> = Selection<T, any, any, any>
