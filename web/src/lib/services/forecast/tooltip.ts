@@ -11,8 +11,7 @@ export function createTooltip(svg: D3Selection<SVGElement>, y: number) {
     .attr("class", "tooltip")
     .attr('x', MARGIN)
     .attr('y', y + MARGIN)
-    .attr('width', '100%')
-    .attr('height', 25)
+    .attr('font-size', window.innerWidth < 480 ? '7px' : '15px')
     .attr('fill', '#ffffff')
 }
 
