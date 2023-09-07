@@ -126,15 +126,15 @@ function appendColumns(
 function appendCurrentTimeIndicator(svg, x, bottomEdge) {
   const now = new Date()
   const xCoor = x(now)
-  const yCoor = 50
+  const yCoor = bottomEdge - 50
 
   svg.append("line")
     .attr("x1", xCoor)
     .attr("y1", yCoor)
     .attr("x2", xCoor)
-    .attr("y2", bottomEdge)
+    .attr("y2", bottomEdge + 10)
     .attr("class", "current-time-line")
-    .style("stroke-width", 1);
+    .style("stroke-width", 3);
 
   svg.append("text")
     .attr('x', xCoor - 2)
