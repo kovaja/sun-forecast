@@ -2,11 +2,12 @@
   import ControlsBar from './ControlsBar/ControlsBar.svelte';
   import { ControlsType } from './ControlsBar/types';
   import type { ControlsVariable } from './ControlsBar/types';
-  import { createEventDispatcher, onMount } from 'svelte';
+  import { createEventDispatcher, onDestroy, onMount } from 'svelte';
 
   export let windowFrom: string;
   export let windowTo: string;
 
+  const reFetchInterval = 5 * 60 * 1000 // every 5 minutes
   const halfHourMs = 30 * 60 * 1000
   let windowSize = window.innerWidth < 450 ? 6 : 12
   let windowMiddle = new Date()
@@ -82,8 +83,17 @@
     ]
   }
 
+  let intervalId: number;
   onMount(() => {
     dispatchWindowChange()
+    intervalId = window.setInterval(() => {
+      windowMiddle = new Date()
+      dispatchWindowChange()
+    }, reFetchInterval)
+  })
+
+  onDestroy(() => {
+    window.clearInterval(intervalId)
   })
 
   $: updateControls(windowFrom, windowTo)

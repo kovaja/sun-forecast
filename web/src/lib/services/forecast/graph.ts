@@ -146,7 +146,10 @@ function appendCurrentTimeIndicator(svg, x, bottomEdge) {
 }
 
 function throwAwayOldGraph() {
-  document.querySelector(GRAPH_ROOT_SELECTOR).innerHTML = ''
+  const graphRoot = document.querySelector(GRAPH_ROOT_SELECTOR)
+  if (graphRoot) {
+    graphRoot.innerHTML = ''
+  }
 }
 
 export function plotGraph(data: Forecast[]) {
