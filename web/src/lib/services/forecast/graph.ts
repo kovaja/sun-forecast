@@ -10,6 +10,7 @@ import {
 } from './constants';
 import { appendText } from './text';
 import { formatTime } from '../../utils/date';
+import { isSmallViewport } from '../../utils/dom';
 
 export const GRAPH_ROOT = 'graph-root';
 const GRAPH_ROOT_SELECTOR = '.' + GRAPH_ROOT
@@ -32,10 +33,9 @@ function createColPadScale() {
 
 function getContainerDimensions(): { width: number, height: number} {
   const rect =  document.querySelector(GRAPH_ROOT_SELECTOR).getBoundingClientRect()
-  // 480 is breakpoint for tabs disappearing
-  const headerSpace = rect.width < 480 ? 70 : 120
+  const headerSpace = isSmallViewport() ? 80 : 120
   return {
-    width: rect.width * 0.95,
+    width: rect.width,
     height: window.innerHeight - headerSpace + 10
   }
 }

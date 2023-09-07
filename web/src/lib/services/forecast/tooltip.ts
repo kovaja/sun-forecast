@@ -2,6 +2,7 @@ import * as d3 from 'd3';
 import type { D3Selection, Forecast } from '../../types';
 import { formatDay, formatTime } from '../../utils/date';
 import { getPeriodStart } from './domains';
+import { isSmallViewport } from '../../utils/dom';
 
 const MARGIN = 5
 
@@ -11,7 +12,7 @@ export function createTooltip(svg: D3Selection<SVGElement>, y: number) {
     .attr("class", "tooltip")
     .attr('x', MARGIN)
     .attr('y', y + MARGIN)
-    .attr('font-size', window.innerWidth < 480 ? '7px' : '15px')
+    .attr('font-size', isSmallViewport() ? '7px' : '15px')
     .attr('fill', '#ffffff')
 }
 
