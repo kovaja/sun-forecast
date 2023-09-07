@@ -26,6 +26,7 @@ export interface Forecast {
   periodEnd: string;
   value: number;
   actual: number;
+  actualCount: number;
 }
 
 export interface ForecastResponse {

@@ -21,12 +21,11 @@ export function createTooltip(svg: Selection<SVGElement, any, any, any>, y: numb
 // Three function that change the tooltip when user hover / move / leave a cell
 export function getMouseOverHandler(tooltip) {
   return function () {
-    const {value, actual, periodEnd}: Forecast = d3.select(this).datum() as Forecast;
+    const {value, actual, periodEnd, actualCount}: Forecast = d3.select(this).datum() as Forecast;
     const dateTime = `${formatDay(periodEnd)} ${formatTime(getPeriodStart(periodEnd).toISOString())} - ${formatTime(periodEnd)}`
     const values = `Forecast ${value.toFixed(0)}W | Actual: ${actual === null ? 'No data' : actual.toFixed(0) + 'W'}`
-    tooltip
-      .text(`${dateTime}: ${values}`)
-    // .style("opacity", 1)
+    const count = `Count: ${actualCount}`
+    tooltip.text(`${dateTime} | ${values} | ${count}`)
   }
 }
 
