@@ -1,0 +1,79 @@
+import type { D3LinearScale, D3Selection, D3TimeScale } from '../../types.d3';
+import type { Forecast } from '../../types';
+import { getPeriodStart } from './domains';
+import { getMouseLeaveHandler, getMouseOverHandler } from './tooltip';
+import { ACTUAL_BAR_FILL, ACTUAL_BAR_STROKE, FORECAST_BAR_FILL, FORECAST_BAR_STROKE } from './constants';
+
+type ColumnProperty = 'value' | 'actual'
+const FILL_MAP: Record<ColumnProperty, string> = {
+  value: FORECAST_BAR_FILL,
+  actual: ACTUAL_BAR_FILL
+}
+const STROKE_MAP: Record<ColumnProperty, string> = {
+  value: FORECAST_BAR_STROKE,
+  actual: ACTUAL_BAR_STROKE
+}
+
+
+interface ColumnParams {
+  elements: {
+    svg: D3Selection<SVGElement>;
+    tooltip: D3Selection<SVGTextElement>,
+  }
+  dimensions: {
+    rightEdge: number,
+    bottomEdge: number,
+    columnPadding: number,
+  }
+  data: Forecast[],
+  scales: {
+    x: D3TimeScale,
+    y: D3LinearScale
+  }
+}
+
+
+
+export function getAppendColumn({
+ elements,
+ data,
+ dimensions,
+ scales,
+}: ColumnParams): (property: ColumnProperty) => void {
+  return (property: ColumnProperty) => {
+    const {svg, tooltip} = elements
+    const {rightEdge, bottomEdge, columnPadding} = dimensions
+    const {x, y} = scales
+    const fill = FILL_MAP[property]
+    const stroke = STROKE_MAP[property]
+
+    function getXCoord(d: Forecast): number {
+      return columnPadding / 2 + x(getPeriodStart(d.periodEnd));
+    }
+
+    function getYCoord(d: Forecast): number {
+      return y(d[property] ?? 0);
+    }
+
+    function getHeight(d: Forecast): number {
+      const val = d[property] ?? 0
+      return val === 0 ? 0 : bottomEdge - y(val)
+    }
+
+    const width = (rightEdge / data.length) - columnPadding
+
+    svg.selectAll('bar-' + property)
+      .data(data)
+      .enter()
+      .append("rect")
+      .attr("x", getXCoord)
+      .attr("y", getYCoord)
+      .attr("width", width)
+      .attr("height", getHeight)
+      .attr("fill", fill)
+      .attr("stroke", stroke)
+      .attr("rx", "5")
+      .on("mouseover", getMouseOverHandler(tooltip))
+      .on("mouseleave", getMouseLeaveHandler(tooltip))
+  }
+}

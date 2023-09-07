@@ -1,16 +1,11 @@
 import type { Forecast } from '../../types';
 import * as d3 from "d3";
-import { createXScale, getXDomain, createYScale, getYDomain, getPeriodStart } from './domains';
-import { createTooltip, getMouseLeaveHandler, getMouseOverHandler } from './tooltip';
-import {
-  ACTUAL_BAR_FILL,
-  ACTUAL_BAR_STROKE,
-  FORECAST_BAR_FILL,
-  FORECAST_BAR_STROKE
-} from './constants';
+import { createXScale, getXDomain, createYScale, getYDomain } from './domains';
+import { createTooltip } from './tooltip';
 import { appendText } from './text';
 import { formatTime } from '../../utils/date';
 import { isSmallViewport } from '../../utils/dom';
+import { getAppendColumn } from './column';
 
 export const GRAPH_ROOT = 'graph-root';
 const GRAPH_ROOT_SELECTOR = '.' + GRAPH_ROOT
@@ -31,8 +26,8 @@ function createColPadScale() {
     .clamp(true);
 }
 
-function getContainerDimensions(): { width: number, height: number} {
-  const rect =  document.querySelector(GRAPH_ROOT_SELECTOR).getBoundingClientRect()
+function getContainerDimensions(): { width: number, height: number } {
+  const rect = document.querySelector(GRAPH_ROOT_SELECTOR).getBoundingClientRect()
   const headerSpace = isSmallViewport() ? 80 : 120
   return {
     width: rect.width,
@@ -55,6 +50,7 @@ function createSvg(width: number, height: number, margin: Margin) {
 function createXGrid(x, size, numberOfTicks) {
   return d3.axisBottom(x).tickSize(-size).tickFormat(() => '').ticks(numberOfTicks);
 }
+
 function createYGrid(y, size, numberOfTicks) {
   return d3.axisLeft(y).tickSize(-size).tickFormat(() => '').ticks(numberOfTicks);
 }
@@ -87,41 +83,6 @@ function appendYAxis(svg, y) {
     .call(d3.axisLeft(y));
 }
 
-function appendColumns(
-  svg,
-  rightEdge: number,
-  bottomEdge: number,
-  data: Forecast[],
-  x,
-  y,
-  tooltip,
-  property: 'value' | 'actual',
-  fill: string,
-  stroke: string,
-) {
-
-  svg.selectAll('bar-' + property)
-    .data(data)
-    .enter()
-    .append("rect")
-    .attr("x", function (d) {
-      return COLUMN_PADDING / 2 + x(getPeriodStart(d.periodEnd));
-    })
-    .attr("y", function (d) {
-      return y(d[property] ?? 0);
-    })
-    .attr("width", (rightEdge / data.length) - COLUMN_PADDING)
-    .attr("height", function (d) {
-      const val = d[property] ?? 0
-      return val === 0 ? 0 : bottomEdge - y(val)
-    })
-    .attr("fill", fill)
-    .attr("stroke", stroke)
-    .attr("rx", "5")
-    .on("mouseover", getMouseOverHandler(tooltip))
-    // .on("mousemove", mousemove)
-    .on("mouseleave", getMouseLeaveHandler(tooltip))
-}
 
 function appendCurrentTimeIndicator(svg, x, bottomEdge) {
   const now = new Date()
@@ -156,7 +117,7 @@ export function plotGraph(data: Forecast[]) {
   throwAwayOldGraph()
 
   const margin = {top: 10, left: 35, right: 5, bottom: 40};
-  const { width, height } = getContainerDimensions();
+  const {width, height} = getContainerDimensions();
   const rightEdge = width - margin.left - margin.right
   const bottomEdge = height - margin.top - margin.bottom
 
@@ -174,8 +135,15 @@ export function plotGraph(data: Forecast[]) {
   appendYGrid(svg, yAxisGrid)
 
   const tooltip = createTooltip(svg, margin.top)
-  appendColumns(svg, rightEdge, bottomEdge, data, x, y, tooltip, 'value', FORECAST_BAR_FILL, FORECAST_BAR_STROKE)
-  appendColumns(svg, rightEdge, bottomEdge, data, x, y, tooltip, 'actual', ACTUAL_BAR_FILL, ACTUAL_BAR_STROKE)
+  const appendColumnsFn = getAppendColumn({
+    elements: { svg, tooltip },
+    dimensions: { rightEdge, bottomEdge, columnPadding: COLUMN_PADDING },
+    scales: { x, y },
+    data
+  })
+  appendColumnsFn('value')
+  appendColumnsFn('actual')
+
   appendXAxis(svg, bottomEdge, x)
   appendYAxis(svg, y)
   appendText(svg, data, x, y, COLUMN_PADDING)
