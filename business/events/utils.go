@@ -21,3 +21,11 @@ func getValidEventTypeQueryParam(eventTypeParam string) EventType {
 
 	return NoEvents
 }
+
+func getValidLimit(limitParam string) int {
+	num, err := strconv.Atoi(limitParam)
+	if err != nil {
+		return 1000000000
+	}
+	return num
+}

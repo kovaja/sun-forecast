@@ -35,15 +35,15 @@ func processReadEvents(rows *sql.Rows, err error) (*[]AppEvent, error) {
 	return &events, nil
 }
 
-func (repository EventRepository) ReadEvents() (*[]AppEvent, error) {
-	query := "SELECT id, timestamp, message, type FROM events ORDER BY timestamp DESC;"
-	rows, err := repository.db.Query(query)
+func (repository EventRepository) ReadEvents(limit int) (*[]AppEvent, error) {
+	query := "SELECT id, timestamp, message, type FROM events ORDER BY timestamp DESC LIMIT $1;"
+	rows, err := repository.db.Query(query, limit)
 	return processReadEvents(rows, err)
 }
 
-func (repository EventRepository) ReadEventsByType(eventType int) (*[]AppEvent, error) {
-	query := "SELECT id, timestamp, message, type FROM events WHERE type = $1 ORDER BY timestamp DESC;"
-	rows, err := repository.db.Query(query, eventType)
+func (repository EventRepository) ReadEventsByType(eventType int, limit int) (*[]AppEvent, error) {
+	query := "SELECT id, timestamp, message, type FROM events WHERE type = $1 ORDER BY timestamp DESC LIMIT $2;"
+	rows, err := repository.db.Query(query, eventType, limit)
 	return processReadEvents(rows, err)
 }
 

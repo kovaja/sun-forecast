@@ -2,6 +2,7 @@ package db
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"kovaja/sun-forecast/utils"
 	"kovaja/sun-forecast/utils/logger"
@@ -17,6 +18,22 @@ func getDbConnectionString() (string, error) {
 
 	if err != nil {
 		return "", utils.CustomError("Failed to load env variables for DB", err)
+	}
+
+	if usr == "" {
+		return "", errors.New("Failed to load db usr variable")
+	}
+
+	if pwd == "" {
+		return "", errors.New("Failed to load db pwd variable")
+	}
+
+	if dbHost == "" {
+		return "", errors.New("Failed to load db host variable")
+	}
+
+	if dbName == "" {
+		return "", errors.New("Failed to load db name variable")
 	}
 
 	return fmt.Sprintf("postgres://%s:%s@%s/%s", usr, pwd, dbHost, dbName), nil

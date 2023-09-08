@@ -16,3 +16,17 @@ func GetEnvVariable(key string) (string, error) {
 
 	return os.Getenv(key), nil
 }
+
+func IsDev() bool {
+	dev, err := GetEnvVariable("DEV")
+	if err != nil {
+		return false
+	}
+
+	if dev == "1" {
+		logger.Log("Running in dev environment")
+		return true
+	}
+
+	return false
+}

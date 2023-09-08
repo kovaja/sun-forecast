@@ -71,7 +71,8 @@ func (s Server) updateForecastHandler(r *http.Request) (any, error) {
 
 func (s Server) eventHandler(r *http.Request) (any, error) {
 	typeStr := r.URL.Query().Get("type")
-	return s.appControllers.EventCtl.ReadEvents(typeStr)
+	limitStr := r.URL.Query().Get("limit")
+	return s.appControllers.EventCtl.ReadEvents(typeStr, limitStr)
 }
 
 func InitializeServer(db *sql.DB) error {
@@ -79,6 +80,10 @@ func InitializeServer(db *sql.DB) error {
 
 	if err != nil {
 		return utils.CustomError("Failed to load port env variable", err)
+	}
+
+	if utils.IsDev() && port == "" {
+		port = "8080"
 	}
 
 	server := Server{

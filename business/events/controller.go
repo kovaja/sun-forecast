@@ -40,13 +40,14 @@ func (ctl EventController) LogAppError(format string, a ...any) {
 	ctl.LogEvent(AppError, format, a...)
 }
 
-func (ctl EventController) ReadEvents(eventType string) (*[]AppEvent, error) {
+func (ctl EventController) ReadEvents(eventType string, limitParam string) (*[]AppEvent, error) {
+	limit := getValidLimit(limitParam)
 	if eventType == "" {
-		return ctl.repository.ReadEvents()
+		return ctl.repository.ReadEvents(limit)
 	}
 
 	requestedEventType := getValidEventTypeQueryParam(eventType)
-	return ctl.repository.ReadEventsByType(int(requestedEventType))
+	return ctl.repository.ReadEventsByType(int(requestedEventType), limit)
 }
 
 func InitializeController(repository EventRepository) EventController {
