@@ -29,10 +29,9 @@ function createColPadScale() {
 
 function getContainerDimensions(container: Element): { width: number, height: number } {
   const rect = container.getBoundingClientRect()
-  const headerSpace = isSmallViewport() ? 80 : 120
   return {
     width: rect.width,
-    height: window.innerHeight - headerSpace + 10
+    height: window.innerHeight - 80 + 10
   }
 }
 

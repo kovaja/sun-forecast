@@ -106,9 +106,3 @@
         <ControlsBar controls={controls}/>
     {/if}
 </div>
-
-<style>
-    .forecast-controls {
-        margin: 0 0 0 40px;
-    }
-</style>

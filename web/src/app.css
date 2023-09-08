@@ -52,12 +52,13 @@ nav {
 nav a {
     flex: 1;
     border-color: #A5C9CA;
-    border-left: 3px solid;
-    padding: 10px;
+    border-left: 1px solid;
+    font-size: 12px;
+    padding: 5px;
 }
 
 nav a[aria-current="page"] {
-    border-bottom: 3px solid;
+    border-bottom: 1px solid;
 }
 
 /**
