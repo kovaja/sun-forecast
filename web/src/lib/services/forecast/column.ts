@@ -3,6 +3,8 @@ import type { Forecast } from '../../types';
 import { getPeriodStart } from './domains';
 import { getMouseLeaveHandler, getMouseOverHandler } from './tooltip';
 import { ACTUAL_BAR_FILL, ACTUAL_BAR_STROKE, FORECAST_BAR_FILL, FORECAST_BAR_STROKE } from './constants';
+import type { BaseType } from 'd3';
+import { addAttributes } from './utils.d3';
 
 type ColumnProperty = 'value' | 'actual'
 const FILL_MAP: Record<ColumnProperty, string> = {
@@ -36,6 +38,8 @@ interface ColumnParams {
   }
 }
 
+
+
 export function getAppendColumn({
  elements,
  data,
@@ -56,24 +60,28 @@ export function getAppendColumn({
     function getYCoord(d: Forecast): number {
       return y(0);
     }
+
     function getHeight(_: Forecast): number {
       return 0
     }
 
     const width = (rightEdge / data.length) - columnPadding
 
-    svg.selectAll('.' + SELECTOR_MAP[property])
+    const selection = svg.selectAll('.' + SELECTOR_MAP[property])
       .data(data)
       .enter()
       .append("rect")
-      .attr('class', SELECTOR_MAP[property])
-      .attr("x", getXCoord)
-      .attr("y", getYCoord)
-      .attr("width", width)
-      .attr("height", getHeight)
-      .attr("fill", fill)
-      .attr("stroke", stroke)
-      .attr("rx", "5")
+
+    addAttributes(selection, {
+      'class': SELECTOR_MAP[property],
+      x: getXCoord,
+      y: getYCoord,
+      width: width,
+      height: getHeight,
+      fill: fill,
+      stroke: stroke,
+      rx: "5",
+    })
       .on("mouseover", getMouseOverHandler(tooltip))
       .on("mouseleave", getMouseLeaveHandler(tooltip))
   }
@@ -88,6 +96,7 @@ export function getAnimateColumns(params: Pick<ColumnParams, 'elements' | 'scale
     function getYCoord(d: Forecast): number {
       return y(d[property] ?? 0);
     }
+
     function getHeight(d: Forecast): number {
       const val = d[property] ?? 0
       return val === 0 ? 0 : bottomEdge - y(val)

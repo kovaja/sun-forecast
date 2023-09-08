@@ -6,6 +6,7 @@ import { appendText } from './text';
 import { formatTime } from '../../utils/date';
 import { isSmallViewport } from '../../utils/dom';
 import { getAnimateColumns, getAppendColumn } from './column';
+import { addAttributes } from './utils.d3';
 
 export const GRAPH_ROOT = 'graph-root';
 const GRAPH_ROOT_SELECTOR = '.' + GRAPH_ROOT
@@ -88,20 +89,22 @@ function appendCurrentTimeIndicator(svg, x, bottomEdge) {
   const now = new Date()
   const xCoor = x(now)
   const yCoor = bottomEdge - 50
+  
+  addAttributes(svg.append("line"), {
+    x1: xCoor,
+    y1: yCoor,
+    x2: xCoor,
+    y2: bottomEdge + 10,
+    'class': 'current-time-line'
+  }).style("stroke-width", 3);
 
-  svg.append("line")
-    .attr("x1", xCoor)
-    .attr("y1", yCoor)
-    .attr("x2", xCoor)
-    .attr("y2", bottomEdge + 10)
-    .attr("class", "current-time-line")
-    .style("stroke-width", 3);
 
-  svg.append("text")
-    .attr('x', xCoor - 2)
-    .attr('y', yCoor - 10)
-    .attr('font-size', 13)
-    .attr('class', 'current-time-text')
+    addAttributes(svg.append("text"), {
+      x: xCoor - 2,
+      y: yCoor - 10,
+      'font-size': 13,
+      'class': 'current-time-text'
+    })
     .text(formatTime(now.toISOString()))
 
 }

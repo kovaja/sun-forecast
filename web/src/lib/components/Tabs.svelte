@@ -26,7 +26,7 @@
 
 <nav class={'tabs-mobile-toggle' + (tabsOpened ? ' tabs-opened' : '')}>
     <button on:click={toggleTabs}>
-        ------V-----
+        Menu
     </button>
 </nav>
 
@@ -47,6 +47,7 @@
         padding: 0;
         border: none;
         text-align: center;
+        width: 100%;
     }
 
     @media (min-width: 480px) {
