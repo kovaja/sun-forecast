@@ -33,7 +33,7 @@
 </script>
 
 <div class="tabs-controls">
-    <ControlsBar controls={controls}/>
+    <ControlsBar controls={controls} align="center"/>
 </div>
 
 
@@ -42,5 +42,6 @@
         display: flex;
         align-items: center;
         justify-content: flex-start;
+        width:100%;
     }
 </style>

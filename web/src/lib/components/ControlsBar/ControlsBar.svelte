@@ -1,12 +1,13 @@
 <script lang="ts">
-  import type { ControlsVariable } from './types';
+  import type { ControlsAlign, ControlsVariable } from './types';
   import { ControlsType } from './types';
   import ControlsLabel from './ControlsLabel.svelte';
 
   export let controls: ControlsVariable[];
+  export let align: ControlsAlign = 'evenly'
 </script>
 
-<div class="controls-bar">
+<div class={'controls-bar controls-bar--' + align}>
     {#each controls as control}
         <div class="controls-bar_variable">
             {#if control.type === ControlsType.Button}
@@ -38,7 +39,15 @@
         background-color: #A5C9CA;
         color: #395B64;
         display: flex;
+
+        width: 100%;
+    }
+
+    .controls-bar--evenly {
         justify-content: space-between;
+    }
+    .controls-bar--center {
+        justify-content: center;
     }
 
     .controls-bar_variable {

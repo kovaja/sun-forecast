@@ -6,33 +6,44 @@
 </script>
 
 <div class="table-container">
-    <table>
-        <thead>
-        <tr>
-            <td>Time</td>
-            <td>Message</td>
-        </tr>
-        </thead>
-        <tbody>
+    <ul>
         {#each events as event}
-            <tr>
-                <td>{formatDate(event.timestamp, true)}</td>
-                <td>{event.message}</td>
-            </tr>
+            <li>
+                <div class="table-container__date">{formatDate(event.timestamp, true)}</div>
+                <div class="table-container__message">{event.message}</div>
+            </li>
         {/each}
-        </tbody>
-    </table>
+    </ul>
 </div>
 
 <style>
     .table-container {
-        height: 80vh;
-        overflow: scroll;
+        height: 85vh;
+        overflow: auto;
+        font-size: 11px;
     }
 
-    td {
+    ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    li {
         padding: 10px;
         border: 1px solid;
+        display: flex;
+    }
+
+    .table-container__date {
+        flex: 0 1 auto;
+        padding-right: 10px;
+    }
+
+    .table-container__message {
+        flex: 1 1 auto;
+        padding-left: 10px;
+        border-left: 1px solid;
     }
 
 </style>

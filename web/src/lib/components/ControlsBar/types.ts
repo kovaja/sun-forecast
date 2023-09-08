@@ -1,3 +1,4 @@
+export type ControlsAlign = 'evenly' | 'center'
 export enum ControlsType {
   Button,
   Group

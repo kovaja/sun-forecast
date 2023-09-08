@@ -89,7 +89,7 @@ function appendCurrentTimeIndicator(svg, x, bottomEdge) {
   const now = new Date()
   const xCoor = x(now)
   const yCoor = bottomEdge - 50
-  
+
   addAttributes(svg.append("line"), {
     x1: xCoor,
     y1: yCoor,

@@ -16,7 +16,7 @@
     }
   ]
 
-  let url = "/";
+  let url = window.location.pathname;
 </script>
 
 <main>
