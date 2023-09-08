@@ -26,8 +26,8 @@ function createColPadScale() {
     .clamp(true);
 }
 
-function getContainerDimensions(): { width: number, height: number } {
-  const rect = document.querySelector(GRAPH_ROOT_SELECTOR).getBoundingClientRect()
+function getContainerDimensions(container: Element): { width: number, height: number } {
+  const rect = container.getBoundingClientRect()
   const headerSpace = isSmallViewport() ? 80 : 120
   return {
     width: rect.width,
@@ -106,18 +106,21 @@ function appendCurrentTimeIndicator(svg, x, bottomEdge) {
 
 }
 
-function throwAwayOldGraph() {
-  const graphRoot = document.querySelector(GRAPH_ROOT_SELECTOR)
-  if (graphRoot) {
-    graphRoot.innerHTML = ''
-  }
+function throwAwayOldGraph(graphRoot: Element) {
+  graphRoot.innerHTML = ''
 }
 
 export function plotGraph(data: Forecast[]) {
-  throwAwayOldGraph()
+  const graphContainer = document.querySelector(GRAPH_ROOT_SELECTOR)
+
+  if (!graphContainer) {
+    return;
+  }
+
+  throwAwayOldGraph(graphContainer)
 
   const margin = {top: 10, left: 35, right: 5, bottom: 40};
-  const {width, height} = getContainerDimensions();
+  const {width, height} = getContainerDimensions(graphContainer);
   const rightEdge = width - margin.left - margin.right
   const bottomEdge = height - margin.top - margin.bottom
 

@@ -1,7 +1,7 @@
 <script lang="ts">
   import ControlsBar from './ControlsBar/ControlsBar.svelte';
-  import { ControlsType } from './ControlsBar/types';
   import type { ControlsVariable } from './ControlsBar/types';
+  import { ControlsType } from './ControlsBar/types';
   import { createEventDispatcher, onDestroy, onMount } from 'svelte';
   import { isSmallViewport } from '../utils/dom';
 
@@ -63,16 +63,17 @@
         onClick: () => moveWindowMiddleInPast()
       },
       {
-        type: ControlsType.Button,
-        sign: '-',
+        type: ControlsType.Group,
         label: 'Window size: ' + readableWindowSize,
         keepLabelVisible: true,
-        onClick: () => updateWindowSizeDown()
-      },
-      {
-        type: ControlsType.Button,
-        label: '+',
-        onClick: () => updateWindowSizeUp()
+        leftButton:{
+          sign: '-',
+          onClick: () => updateWindowSizeDown()
+        },
+        rightButton: {
+          sign: '+',
+          onClick: () => updateWindowSizeUp()
+        }
       },
       {
         type: ControlsType.Button,

@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { ControlsVariable } from './types';
   import { ControlsType } from './types';
+  import ControlsLabel from './ControlsLabel.svelte';
 
   export let controls: ControlsVariable[];
 </script>
@@ -10,21 +11,23 @@
         <div class="controls-bar_variable">
             {#if control.type === ControlsType.Button}
                 {#if control.sign && control.labelPosition === 'left'}
-                    {@const clsx = `controls-bar_label ${control.keepLabelVisible ? 'controls-bar_label--no-hide' : ''}`}
-                    <span class={clsx}>
-                        {control.label}
-                    </span>
+                    <ControlsLabel keepLabelVisible={control.keepLabelVisible} label={control.label}/>
                 {/if}
                 <button on:click={control.onClick}>
                     {control.sign ?? control.label}
                 </button>
                 {#if control.sign && (!control.labelPosition || control.labelPosition === 'right')}
-                    {@const clsx = `controls-bar_label ${control.keepLabelVisible ? 'controls-bar_label--no-hide' : ''}`}
-                    <span class={clsx}>
-                        {control.label}
-                    </span>
+                    <ControlsLabel keepLabelVisible={control.keepLabelVisible} label={control.label}/>
                 {/if}
 
+            {:else if control.type === ControlsType.Group}
+                <button on:click={control.leftButton.onClick}>
+                    {control.leftButton.sign}
+                </button>
+                <ControlsLabel keepLabelVisible={control.keepLabelVisible} label={control.label}/>
+                <button on:click={control.rightButton.onClick}>
+                    {control.rightButton.sign}
+                </button>
             {/if}
         </div>
     {/each}
@@ -41,24 +44,5 @@
     .controls-bar_variable {
         display: flex;
         align-items: center;
-    }
-
-    .controls-bar_label {
-        padding: 5px;
-        border: 1px solid #395B64;
-        font-size: 7px;
-        display: none;
-    }
-
-    .controls-bar_label--no-hide {
-        display: block;
-    }
-
-
-    @media (min-width: 480px) {
-        .controls-bar_label {
-            display: block;
-            font-size: 11px;
-        }
     }
 </style>
