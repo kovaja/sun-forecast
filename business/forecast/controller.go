@@ -134,12 +134,15 @@ func (ctl ForecastController) UpdateForecasts(r *http.Request) ([]ForecastUpdate
 		updated += 1
 	}
 
-	ctl.eventCtl.LogEvent(
+	// this has been now reliable enough, we are actually interested only when more than 2 records are updated
+	ctl.eventCtl.LogEventIf(
+		(updated > 2),
 		events.ForecastUpdated,
 		"Updated forecasts with actual values, records %d, %d forecasts updated",
 		len(records),
 		updated,
 	)
+
 	return updates, nil
 }
 
