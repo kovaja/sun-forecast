@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onDestroy, onMount } from 'svelte';
-  import { GRAPH_ROOT, plotGraph } from '../../services/forecast/graph';
+  import { GRAPH_ROOT, plotGraph } from '../../services/graph/forecast/graph';
   import type { Forecast } from '../../types';
 
   export let forecasts: Forecast[] = [];

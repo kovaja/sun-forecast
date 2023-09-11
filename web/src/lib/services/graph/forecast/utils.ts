@@ -1,4 +1,4 @@
-import type { Forecast } from '../../types';
+import type { Forecast } from '../../../types';
 
 export function forecastSuccessRate(forecast: Forecast): number | null {
   if (forecast.value === 0 || forecast.actual === null) {

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onDestroy, onMount } from 'svelte';
   import type { ForecastDiff } from '../../types';
-  import { DIFF_GRAPH_ROOT, plotGraph } from '../../services/forecast/diff/graph';
+  import { DIFF_GRAPH_ROOT, plotGraph } from '../../services/graph/diff/graph';
 
   export let diffs: ForecastDiff[] = [];
 

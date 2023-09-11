@@ -1,4 +1,4 @@
-import type { Forecast } from '../../types';
+import type { Forecast } from '../../../types';
 import * as d3 from 'd3';
 
 const MS_30_MINUTES = 30 * 60 * 1000

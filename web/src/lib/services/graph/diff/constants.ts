@@ -1,0 +1,1 @@
+export const DIFF_LINE_STROKE = '#00bfbf';

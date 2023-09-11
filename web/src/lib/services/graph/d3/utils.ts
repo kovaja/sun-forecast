@@ -1,5 +1,5 @@
 import type { BaseType } from 'd3';
-import type { D3Selection } from '../../types.d3';
+import type { D3Selection } from '../../../types.d3';
 
 export function addAttributes<T extends BaseType>(
   selection: D3Selection<T>,

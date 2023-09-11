@@ -1,9 +1,10 @@
 import * as d3 from "d3";
 import type { ForecastDiff } from '../../../types';
-import { createSvg, getContainerDimensions, throwAwayOldGraph } from '../../d3/graphUtils';
+import { createSvg, getContainerDimensions, throwAwayOldGraph } from '../d3/graph';
 import { createXScale, createYScale, getXDomain, getYDomain } from './domains';
 import type { D3Selection } from '../../../types.d3';
-import { appendXAxis, appendXGrid, appendYAxis, appendYGrid, createXGrid, createYGrid } from '../../d3/axis';
+import { appendXAxis, appendXGrid, appendYAxis, appendYGrid, createXGrid, createYGrid } from '../d3/axis';
+import { DIFF_LINE_STROKE } from './constants';
 
 export const DIFF_GRAPH_ROOT = 'diff-graph'
 const GRAPH_ROOT_SELECTOR = '.' + DIFF_GRAPH_ROOT
@@ -14,9 +15,16 @@ function drawLine(svg: D3Selection<SVGElement>, diff: ForecastDiff, line, x, y) 
   svg.append("path")
     .datum(diff.diffs)
     .attr("fill", "none")
-    .attr("stroke", "steelblue")
-    .attr("stroke-width", 1.5)
+    .attr("stroke", DIFF_LINE_STROKE)
+    .attr("stroke-width", 0.5)
     .attr("d", line)
+    .on('mouseover', function () {
+      d3.select(this).attr('stroke-width', 2)
+    })
+    .on('mouseout', function (){
+      d3.select(this).attr('stroke-width', 0.5)
+    })
+
 }
 
 export function plotGraph(diffs: ForecastDiff[]) {

@@ -1,12 +1,12 @@
-import type { Forecast } from '../../types';
+import type { Forecast } from '../../../types';
 import * as d3 from "d3";
 import { createXScale, createYScale, getXDomain, getYDomain } from './domains';
 import { createTooltip } from './tooltip';
 import { appendText } from './text';
-import { formatTime } from '../../utils/date';
+import { formatTime } from '../../../utils/date';
 import { getAnimateColumns, getAppendColumn } from './column';
-import { addAttributes } from './utils.d3';
-import { createSvg, getContainerDimensions, throwAwayOldGraph } from '../d3/graphUtils';
+import { addAttributes } from '../d3/utils';
+import { createSvg, getContainerDimensions, throwAwayOldGraph } from '../d3/graph';
 import { appendXAxis, appendXGrid, appendYAxis, appendYGrid, createXGrid, createYGrid } from '../d3/axis';
 
 export const GRAPH_ROOT = 'graph-root';

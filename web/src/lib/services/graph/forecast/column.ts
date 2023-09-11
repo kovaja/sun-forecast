@@ -1,10 +1,9 @@
-import type { D3LinearScale, D3Selection, D3TimeScale } from '../../types.d3';
-import type { Forecast } from '../../types';
+import type { D3LinearScale, D3Selection, D3TimeScale } from '../../../types.d3';
+import type { Forecast } from '../../../types';
 import { getPeriodStart } from './domains';
 import { getMouseLeaveHandler, getMouseOverHandler } from './tooltip';
 import { ACTUAL_BAR_FILL, ACTUAL_BAR_STROKE, FORECAST_BAR_FILL, FORECAST_BAR_STROKE } from './constants';
-import type { BaseType } from 'd3';
-import { addAttributes } from './utils.d3';
+import { addAttributes } from '../d3/utils';
 
 type ColumnProperty = 'value' | 'actual'
 const FILL_MAP: Record<ColumnProperty, string> = {
