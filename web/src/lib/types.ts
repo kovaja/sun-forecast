@@ -40,3 +40,8 @@ export interface AppLink {
   route: string;
   name: string;
 }
+
+export interface ForecastDiff {
+  date: string;
+  diffs: number[]
+}

@@ -1,4 +1,4 @@
-import type { ForecastResponse } from '../../types';
+import type { ForecastDiff, ForecastResponse } from '../../types';
 import { fetchJsonData } from './base';
 
 const MS_HOURS = (x) => x * 60 * 60 * 1000
@@ -12,4 +12,12 @@ export async function fetchForecast(windowSizeHrs: number, windowMiddle: Date): 
   }
 
   return await fetchJsonData<ForecastResponse>('forecast', params)
+}
+
+export async function fetchDiffs(): Promise<ForecastDiff[]> {
+  const params = {
+    from: new Date(new Date().getTime() - 6*24*60*60*1000).toISOString(),
+    to: new Date().toISOString()
+  }
+  return await fetchJsonData<ForecastDiff[]>('forecast/diff', params)
 }

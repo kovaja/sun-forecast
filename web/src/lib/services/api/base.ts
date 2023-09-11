@@ -3,7 +3,7 @@ import type { ApiResponse, DataResponse } from '../../types';
 
 const API_BASE = '/api'
 
-type SupportedPath = 'event' | 'forecast'
+type SupportedPath = 'event' | 'forecast' | 'forecast/diff'
 
 function getUrl(path: SupportedPath, query?: string): string {
   const url = `${API_BASE}/${path}/`

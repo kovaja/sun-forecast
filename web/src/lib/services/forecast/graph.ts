@@ -1,50 +1,25 @@
 import type { Forecast } from '../../types';
 import * as d3 from "d3";
-import { createXScale, getXDomain, createYScale, getYDomain } from './domains';
+import { createXScale, createYScale, getXDomain, getYDomain } from './domains';
 import { createTooltip } from './tooltip';
 import { appendText } from './text';
 import { formatTime } from '../../utils/date';
-import { isSmallViewport } from '../../utils/dom';
 import { getAnimateColumns, getAppendColumn } from './column';
 import { addAttributes } from './utils.d3';
+import { createSvg, getContainerDimensions, throwAwayOldGraph } from '../d3/graphUtils';
 
 export const GRAPH_ROOT = 'graph-root';
 const GRAPH_ROOT_SELECTOR = '.' + GRAPH_ROOT
 const MAX_COLUMN_PADDING = 15
 let COLUMN_PADDING = 15
 
-interface Margin {
-  top: number;
-  left: number;
-  bottom: number;
-  right: number;
-}
+
 
 function createColPadScale() {
   return d3.scaleLinear()
     .domain([10, 30])
     .range([MAX_COLUMN_PADDING, 3])
     .clamp(true);
-}
-
-function getContainerDimensions(container: Element): { width: number, height: number } {
-  const rect = container.getBoundingClientRect()
-  return {
-    width: rect.width,
-    height: window.innerHeight - 80 + 10
-  }
-}
-
-function createSvg(width: number, height: number, margin: Margin) {
-  return d3.select(GRAPH_ROOT_SELECTOR)
-    .append("svg")
-    .attr("width", width)
-    .attr("height", height)
-    .append("g")
-    .attr(
-      "transform",
-      "translate(" + margin.left + "," + margin.top + ")"
-    );
 }
 
 function createXGrid(x, size, numberOfTicks) {
@@ -108,10 +83,6 @@ function appendCurrentTimeIndicator(svg, x, bottomEdge) {
 
 }
 
-function throwAwayOldGraph(graphRoot: Element) {
-  graphRoot.innerHTML = ''
-}
-
 export function plotGraph(data: Forecast[]) {
   const graphContainer = document.querySelector(GRAPH_ROOT_SELECTOR)
 
@@ -121,17 +92,14 @@ export function plotGraph(data: Forecast[]) {
 
   throwAwayOldGraph(graphContainer)
 
-  const margin = {top: 10, left: 35, right: 5, bottom: 40};
-  const {width, height} = getContainerDimensions(graphContainer);
-  const rightEdge = width - margin.left - margin.right
-  const bottomEdge = height - margin.top - margin.bottom
+  const { width, height, rightEdge, bottomEdge, margin} = getContainerDimensions(graphContainer);
 
   const colPadScale = createColPadScale()
   COLUMN_PADDING = colPadScale(data.length)
 
   const x = createXScale(rightEdge, getXDomain(data))
   const y = createYScale(bottomEdge, getYDomain(data))
-  const svg = createSvg(width, height, margin)
+  const svg = createSvg(GRAPH_ROOT_SELECTOR, width, height, margin)
 
   const xAxisGrid = createXGrid(x, bottomEdge, 10)
   const yAxisGrid = createYGrid(y, rightEdge, 5)

@@ -4,11 +4,16 @@
   import Forecast from './routes/Forecast.svelte';
   import type { AppLink } from './lib/types';
   import Tabs from './lib/components/Tabs.svelte';
+  import Diffs from './routes/Diffs.svelte';
 
   const links: AppLink[] = [
     {
       name: 'Forecast',
       route: '/'
+    },
+    {
+      name: 'Diffs',
+      route: '/diffs'
     },
     {
       name: 'Events',
@@ -20,20 +25,21 @@
 </script>
 
 <main>
-    <Router {url}>
-        <Tabs links={links}/>
-        <div class="route-main">
-            <Route path="/events" component={Events}/>
-            <Route path="/">
-                <Forecast/>
-            </Route>
-        </div>
-    </Router>
+  <Router {url}>
+    <Tabs links={links}/>
+    <div class="route-main">
+      <Route path="/events" component={Events}/>
+      <Route path="/diffs" component={Diffs}/>
+      <Route path="/">
+        <Forecast/>
+      </Route>
+    </div>
+  </Router>
 </main>
 
 <style>
-    main {
-        width: 100%;
-        height: 100%;
-    }
+  main {
+    width: 100%;
+    height: 100%;
+  }
 </style>
