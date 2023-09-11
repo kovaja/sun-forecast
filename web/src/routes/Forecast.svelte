@@ -1,6 +1,6 @@
 <script lang="ts">
-  import ForecastGraph from '../lib/components/ForecastGraph.svelte';
-  import ForecastControls from '../lib/components/ForecastControls.svelte';
+  import ForecastGraph from '../lib/components/Forecasts/ForecastGraph.svelte';
+  import ForecastControls from '../lib/components/Forecasts/ForecastControls.svelte';
   import { fetchForecast } from '../lib/services/api/forecast.api';
   import type { Forecast } from '../lib/types';
 

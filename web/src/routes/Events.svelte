@@ -3,8 +3,8 @@
   import { AppEventType } from '../lib/types';
   import { fetchEvents } from '../lib/services/api/event.api';
   import { onMount } from 'svelte';
-  import EventsTable from '../lib/components/EventsTable.svelte';
-  import EventsControls from '../lib/components/EventsControls.svelte';
+  import EventsTable from '../lib/components/Events/EventsTable.svelte';
+  import EventsControls from '../lib/components/Events/EventsControls.svelte';
 
   let selectedType: AppEventType = AppEventType.AppError
   let events: AppEvent[] | null = null

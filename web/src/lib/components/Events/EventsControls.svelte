@@ -1,9 +1,9 @@
 <script lang="ts">
-  import { AppEventType } from '../types';
+  import { AppEventType } from '../../types';
   import { createEventDispatcher } from 'svelte';
-  import ControlsBar from './ControlsBar/ControlsBar.svelte';
-  import type { ControlsVariable } from './ControlsBar/types';
-  import { ControlsType } from './ControlsBar/types';
+  import ControlsBar from '../ControlsBar/ControlsBar.svelte';
+  import type { ControlsVariable } from '../ControlsBar/types';
+  import { ControlsType } from '../ControlsBar/types';
 
   const dispatch = createEventDispatcher<{ typeSelected: { type: AppEventType}}>();
   function onTypeSelected(type: AppEventType) {

@@ -1,9 +1,9 @@
 <script lang="ts">
-  import ControlsBar from './ControlsBar/ControlsBar.svelte';
-  import type { ControlsVariable } from './ControlsBar/types';
-  import { ControlsType } from './ControlsBar/types';
+  import ControlsBar from '../ControlsBar/ControlsBar.svelte';
+  import type { ControlsVariable } from '../ControlsBar/types';
+  import { ControlsType } from '../ControlsBar/types';
   import { createEventDispatcher, onDestroy, onMount } from 'svelte';
-  import { isSmallViewport } from '../utils/dom';
+  import { isSmallViewport } from '../../utils/dom';
 
   export let windowFrom: string;
   export let windowTo: string;

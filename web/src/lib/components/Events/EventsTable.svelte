@@ -1,6 +1,6 @@
 <script lang="ts">
-  import type { AppEvent } from "../types";
-  import { formatDate } from '../utils/date';
+  import type { AppEvent } from "../../types";
+  import { formatDate } from '../../utils/date';
 
   export let events: AppEvent[] = []
 </script>

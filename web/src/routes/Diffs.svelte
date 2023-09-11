@@ -1,22 +1,16 @@
 <script lang="ts">
-  import ForecastGraph from '../lib/components/ForecastGraph.svelte';
-  import ForecastControls from '../lib/components/ForecastControls.svelte';
   import { fetchDiffs} from '../lib/services/api/forecast.api';
   import type { ForecastDiff } from '../lib/types';
   import DiffsGraph from '../lib/components/Diffs/DiffsGraph.svelte';
-  import { onMount } from 'svelte';
+  import DiffsControls from '../lib/components/Diffs/DiffsControls.svelte';
 
   // triggered and initialized by controls component
   let windowSize: number;
-  let windowMiddle: Date;
-
-  let windowFrom = ''
-  let windowTo = ''
 
   let diffs: ForecastDiff[] = [];
 
   async function _fetchDiffs() {
-    diffs = await fetchDiffs()
+    diffs = await fetchDiffs(windowSize)
   }
 
   let debounceTimeoutId = null
@@ -28,15 +22,13 @@
     debounceTimeoutId = setTimeout(_fetchDiffs, 400)
   }
 
-  function onWindowChange({detail: {windowSize: ws, windowMiddle: wm}}: CustomEvent) {
+  function onWindowChange({detail: {windowSize: ws}}: CustomEvent) {
     windowSize = ws;
-    windowMiddle = wm;
     debounceFetch()
   }
-
-  onMount(debounceFetch)
 </script>
 
 <div class="diffs">
+  <DiffsControls on:windowChange={onWindowChange} />
   <DiffsGraph diffs={diffs} />
 </div>
