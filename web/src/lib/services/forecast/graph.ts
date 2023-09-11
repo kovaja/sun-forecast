@@ -7,55 +7,18 @@ import { formatTime } from '../../utils/date';
 import { getAnimateColumns, getAppendColumn } from './column';
 import { addAttributes } from './utils.d3';
 import { createSvg, getContainerDimensions, throwAwayOldGraph } from '../d3/graphUtils';
+import { appendXAxis, appendXGrid, appendYAxis, appendYGrid, createXGrid, createYGrid } from '../d3/axis';
 
 export const GRAPH_ROOT = 'graph-root';
 const GRAPH_ROOT_SELECTOR = '.' + GRAPH_ROOT
 const MAX_COLUMN_PADDING = 15
 let COLUMN_PADDING = 15
 
-
-
 function createColPadScale() {
   return d3.scaleLinear()
     .domain([10, 30])
     .range([MAX_COLUMN_PADDING, 3])
     .clamp(true);
-}
-
-function createXGrid(x, size, numberOfTicks) {
-  return d3.axisBottom(x).tickSize(-size).tickFormat(() => '').ticks(numberOfTicks);
-}
-
-function createYGrid(y, size, numberOfTicks) {
-  return d3.axisLeft(y).tickSize(-size).tickFormat(() => '').ticks(numberOfTicks);
-}
-
-
-function appendXGrid(svg, grid, height) {
-  svg.append('g')
-    .attr('class', 'x axis-grid')
-    .attr('transform', 'translate(0,' + height + ')')
-    .call(grid)
-}
-
-function appendYGrid(svg, grid) {
-  svg.append('g')
-    .attr('class', 'y axis-grid')
-    .call(grid);
-}
-
-function appendXAxis(svg, bottomEdge: number, x) {
-  svg.append("g")
-    .attr("transform", "translate(0," + bottomEdge + ")")
-    .call(d3.axisBottom(x))
-    .selectAll("text")
-    .attr("transform", "translate(-10,0)rotate(-45)")
-    .style("text-anchor", "end");
-}
-
-function appendYAxis(svg, y) {
-  svg.append("g")
-    .call(d3.axisLeft(y));
 }
 
 

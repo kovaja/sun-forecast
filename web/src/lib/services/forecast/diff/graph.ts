@@ -3,6 +3,7 @@ import type { ForecastDiff } from '../../../types';
 import { createSvg, getContainerDimensions, throwAwayOldGraph } from '../../d3/graphUtils';
 import { createXScale, createYScale, getXDomain, getYDomain } from './domains';
 import type { D3Selection } from '../../../types.d3';
+import { appendXAxis, appendXGrid, appendYAxis, appendYGrid, createXGrid, createYGrid } from '../../d3/axis';
 
 export const DIFF_GRAPH_ROOT = 'diff-graph'
 const GRAPH_ROOT_SELECTOR = '.' + DIFF_GRAPH_ROOT
@@ -35,8 +36,14 @@ export function plotGraph(diffs: ForecastDiff[]) {
   } = getContainerDimensions(graphContainer);
 
   const x = createXScale(rightEdge, getXDomain(diffs))
-  const y = createYScale(bottomEdge, getYDomain(diffs))
+  const y = createYScale(bottomEdge, getYDomain())
   const svg = createSvg(GRAPH_ROOT_SELECTOR, width, height, margin)
+
+  const xAxisGrid = createXGrid(x, bottomEdge, 10)
+  const yAxisGrid = createYGrid(y, rightEdge, 5)
+
+  appendXGrid(svg, xAxisGrid, bottomEdge)
+  appendYGrid(svg, yAxisGrid)
 
   const line = d3.line().x(
     function(d,i) { return x(i)}
@@ -46,4 +53,7 @@ export function plotGraph(diffs: ForecastDiff[]) {
   diffs.forEach(d => {
     drawLine(svg, d, line, x, y)
   })
+
+  appendXAxis(svg, bottomEdge, x)
+  appendYAxis(svg, y)
 }
