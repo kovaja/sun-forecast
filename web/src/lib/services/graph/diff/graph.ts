@@ -4,28 +4,14 @@ import { createSvg, getContainerDimensions, throwAwayOldGraph } from '../d3/grap
 import { createXScale, createYScale, getXDomain, getYDomain } from './domains';
 import type { D3Selection } from '../../../types.d3';
 import { appendXAxis, appendXGrid, appendYAxis, appendYGrid, createXGrid, createYGrid } from '../d3/axis';
-import { DIFF_LINE_STROKE } from './constants';
+import { AVG_LINE_STROKE, DIFF_LINE_STROKE } from './constants';
+import { drawLine } from './line';
+import { computeAverageSeries } from './averageLine';
 
 export const DIFF_GRAPH_ROOT = 'diff-graph'
 const GRAPH_ROOT_SELECTOR = '.' + DIFF_GRAPH_ROOT
 
-function drawLine(svg: D3Selection<SVGElement>, diff: ForecastDiff, line) {
 
-
-  svg.append("path")
-    .datum(diff.diffs)
-    .attr("fill", "none")
-    .attr("stroke", DIFF_LINE_STROKE)
-    .attr("stroke-width", 0.5)
-    .attr("d", line)
-    .on('mouseover', function () {
-      d3.select(this).attr('stroke-width', 2)
-    })
-    .on('mouseout', function (){
-      d3.select(this).attr('stroke-width', 0.5)
-    })
-
-}
 
 export function plotGraph(diffs: ForecastDiff[]) {
   const graphContainer = document.querySelector(GRAPH_ROOT_SELECTOR)
@@ -44,7 +30,7 @@ export function plotGraph(diffs: ForecastDiff[]) {
   } = getContainerDimensions(graphContainer);
 
   const x = createXScale(rightEdge, getXDomain(diffs))
-  const y = createYScale(bottomEdge, getYDomain())
+  const y = createYScale(bottomEdge, getYDomain(diffs ))
   const svg = createSvg(GRAPH_ROOT_SELECTOR, width, height, margin)
 
   const xAxisGrid = createXGrid(x, bottomEdge, 10)
@@ -59,7 +45,22 @@ export function plotGraph(diffs: ForecastDiff[]) {
     function(d) { return y(d as any) }
   )
   diffs.forEach(d => {
-    drawLine(svg, d, line)
+    drawLine({
+      svg,
+      diff: d,
+      line,
+      stroke: DIFF_LINE_STROKE,
+      strokeWidth: 0.5
+    })
+  })
+
+  const avgSeries = computeAverageSeries(diffs)
+  drawLine({
+    svg,
+    diff: { diffs: avgSeries, date: 'Average' },
+    line,
+    stroke: AVG_LINE_STROKE,
+    strokeWidth: 2
   })
 
   appendXAxis(svg, bottomEdge, x)

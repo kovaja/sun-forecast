@@ -1,8 +1,9 @@
 import * as d3 from "d3";
 import type { ForecastDiff } from '../../../types';
 
-export function getYDomain() {
-  return [-100, 100]
+export function getYDomain(diffs: ForecastDiff[]) {
+  const flattenDiffs = diffs.map(d => d.diffs).flat()
+  return [d3.min(flattenDiffs), d3.max(flattenDiffs)]
 }
 export function getXDomain(diffs: ForecastDiff[]) {
   return [0, diffs[0].diffs.length -1]
