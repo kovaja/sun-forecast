@@ -24,7 +24,7 @@ export function drawLine({
     .attr("stroke-width", strokeWidth)
     .attr("d", line)
     .on('mouseover', function () {
-      d3.select(this).attr('stroke-width', strokeWidth * 4)
+      d3.select(this).attr('stroke-width', strokeWidth * 4  )
     })
     .on('mouseout', function (){
       d3.select(this).attr('stroke-width', strokeWidth)

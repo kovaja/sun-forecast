@@ -4,9 +4,9 @@ import { createSvg, getContainerDimensions, throwAwayOldGraph } from '../d3/grap
 import { createXScale, createYScale, getXDomain, getYDomain } from './domains';
 import type { D3Selection } from '../../../types.d3';
 import { appendXAxis, appendXGrid, appendYAxis, appendYGrid, createXGrid, createYGrid } from '../d3/axis';
-import { AVG_LINE_STROKE, DIFF_LINE_STROKE } from './constants';
+import { AVG_LINE_STROKE, DIFF_LINE_STROKE, MEDIAN_LINE_STROKE } from './constants';
 import { drawLine } from './line';
-import { computeAverageSeries } from './averageLine';
+import { computeAverageSeries, computeMedianSeries } from './aggregateLine';
 
 export const DIFF_GRAPH_ROOT = 'diff-graph'
 const GRAPH_ROOT_SELECTOR = '.' + DIFF_GRAPH_ROOT
@@ -60,6 +60,15 @@ export function plotGraph(diffs: ForecastDiff[]) {
     diff: { diffs: avgSeries, date: 'Average' },
     line,
     stroke: AVG_LINE_STROKE,
+    strokeWidth: 2
+  })
+
+  const medSeries = computeMedianSeries(diffs)
+  drawLine({
+    svg,
+    diff: { diffs: medSeries, date: 'Median' },
+    line,
+    stroke: MEDIAN_LINE_STROKE  ,
     strokeWidth: 2
   })
 

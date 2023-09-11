@@ -28,7 +28,7 @@
     controls = [
       {
         type: ControlsType.Group,
-        label: `Window size: ${windowSize} day(s)`,
+        label: `Window size: ${windowSize + 1} day(s)`,
         keepLabelVisible: true,
         leftButton:{
           sign: '-',
