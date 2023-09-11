@@ -69,6 +69,21 @@ func (s Server) updateForecastHandler(r *http.Request) (any, error) {
 	return nil, ErrMethodNotAllowed
 }
 
+func (s Server) getForecastDiffs(r *http.Request) (any, error) {
+	fromStr := r.URL.Query().Get("from")
+	toStr := r.URL.Query().Get("to")
+
+	if toStr == "" {
+		return nil, ErrMissingParamTo
+	}
+
+	if fromStr == "" {
+		return nil, ErrMissingParamFrom
+	}
+
+	return s.appControllers.ForecastCtl.GetForecastDiffs(fromStr, toStr)
+}
+
 func (s Server) eventHandler(r *http.Request) (any, error) {
 	typeStr := r.URL.Query().Get("type")
 	limitStr := r.URL.Query().Get("limit")
@@ -91,6 +106,7 @@ func InitializeServer(db *sql.DB) error {
 	}
 
 	var routes map[string]ApiHandler = map[string]ApiHandler{
+		"forecast/diff":    server.getForecastDiffs,
 		"forecast":         server.forecastHandler,
 		"weather":          currentWeatherHandler,
 		"weather/forecast": weatherForecastHandler,

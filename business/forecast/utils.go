@@ -3,6 +3,7 @@ package forecast
 import (
 	"kovaja/sun-forecast/business/forecast/solcast"
 	"kovaja/sun-forecast/utils/logger"
+	"sort"
 	"strconv"
 	"time"
 )
@@ -194,6 +195,34 @@ func ParseReadQuery(fromStr string, toStr string) (*time.Time, *time.Time, error
 	return &from, &to, nil
 }
 
+/*
+In the request we will consider only whole days
+so if it asks for 2023-08-01T15:25:45.000Z,
+we will use 2023-08-01T00:00:00.000Z
+*/
+func ParseDiffQuery(fromStr string, toStr string) (*time.Time, *time.Time, error) {
+	fromQueryTime, err := time.Parse(time.RFC3339, fromStr)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	toQueryTime, err := time.Parse(time.RFC3339, toStr)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	// we will shift fromQueryTime to start of the day and add one period
+	// so we don't have period from previous day
+	// so 2023-08-01T15:25:45.000Z will become 2023-08-01T00:30:00.000Z
+	from := fromQueryTime.Truncate(24 * time.Hour).Add(30 * time.Minute)
+
+	// we will shift toQueryTime to start of the next day
+	// so 2023-08-01T15:25:45.000Z will become 2023-08-02T00:00:00.000Z
+	to := toQueryTime.Add(24 * time.Hour).Truncate(24 * time.Hour)
+
+	return &from, &to, nil
+}
+
 func ConstructForcast(apiForecast solcast.SolcastApiForecast) (*Forecast, error) {
 	parsedTime, err := time.Parse(TS_LAYOUT, apiForecast.PeriodEnd)
 	if err != nil {
@@ -208,4 +237,46 @@ func ConstructForcast(apiForecast solcast.SolcastApiForecast) (*Forecast, error)
 	}
 
 	return &forecast, nil
+}
+
+func GetDiffs(forecasts *[]Forecast) []ForecastDiff {
+	diffsMap := make(map[time.Time][]float64)
+
+	for _, forecast := range *forecasts {
+		// remove one minute so 00:00:00 belongs to the previous day (as it should)
+		day := forecast.PeriodEnd.Add(-1 * time.Minute).Truncate(24 * time.Hour)
+		existing := diffsMap[day]
+
+		if existing == nil {
+			logger.Log("Creating new array for %v", day)
+			existing = []float64{}
+		}
+
+		var diff float64 = 0
+		if forecast.Actual != nil && forecast.Value != 0 {
+			diff = -1 * (100 - (*forecast.Actual/forecast.Value)*100)
+		}
+
+		existing = append(existing, diff)
+		diffsMap[day] = existing
+	}
+
+	diffsArr := []ForecastDiff{}
+	for date, diffs := range diffsMap {
+		if len(diffs) != 48 {
+			logger.Log("Wrong number of diffs for %v", date)
+		}
+
+		diffsArr = append(diffsArr, ForecastDiff{
+			Date:  date,
+			Diffs: diffs,
+		})
+	}
+
+	// sort diffsArr by date
+	sort.Slice(diffsArr, func(i, j int) bool {
+		return diffsArr[i].Date.Before(diffsArr[j].Date)
+	})
+
+	return diffsArr
 }

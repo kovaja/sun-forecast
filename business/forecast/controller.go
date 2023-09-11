@@ -109,6 +109,25 @@ func (ctl ForecastController) GetForecasts(fromStr string, toStr string) (*Forec
 	}, nil
 }
 
+func (ctl ForecastController) GetForecastDiffs(fromStr string, toStr string) ([]ForecastDiff, error) {
+	from, to, err := ParseDiffQuery(fromStr, toStr)
+	if err != nil {
+		return nil, utils.CustomError("Failed to parse query params", err)
+	}
+	logger.Log("Get forecast diffs: from %v to %v", from, to)
+
+	forecasts, err := ctl.repository.ReadForecasts(from, to)
+	if err != nil {
+		return nil, err
+	}
+
+	logger.Log("Compute diffs from %d forcasts", len(*forecasts))
+
+	diffs := GetDiffs(forecasts)
+
+	return diffs, nil
+}
+
 func (ctl ForecastController) UpdateForecasts(r *http.Request) ([]ForecastUpdate, error) {
 	var data [][]HaHistoryRecord
 	err := json.NewDecoder(r.Body).Decode(&data)
@@ -136,7 +155,7 @@ func (ctl ForecastController) UpdateForecasts(r *http.Request) ([]ForecastUpdate
 
 	// this has been now reliable enough, we are actually interested only when more than 2 records are updated
 	ctl.eventCtl.LogEventIf(
-		(updated > 2),
+		(updated > 1),
 		events.ForecastUpdated,
 		"Updated forecasts with actual values, records %d, %d forecasts updated",
 		len(records),

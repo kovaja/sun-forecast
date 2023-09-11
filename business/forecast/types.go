@@ -28,3 +28,10 @@ type ForecastUpdate struct {
 	ActualCount  int
 	LastActualAt time.Time
 }
+
+type ForecastDiff struct {
+	Date time.Time `json:"date"`
+	// the length of this array is always the same
+	// we have 30minutes invervals, therefore there will be 48 diffs
+	Diffs []float64 `json:"diffs"`
+}
