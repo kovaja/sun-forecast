@@ -9,7 +9,7 @@ import { DIFF_LINE_STROKE } from './constants';
 export const DIFF_GRAPH_ROOT = 'diff-graph'
 const GRAPH_ROOT_SELECTOR = '.' + DIFF_GRAPH_ROOT
 
-function drawLine(svg: D3Selection<SVGElement>, diff: ForecastDiff, line, x, y) {
+function drawLine(svg: D3Selection<SVGElement>, diff: ForecastDiff, line) {
 
 
   svg.append("path")
@@ -59,7 +59,7 @@ export function plotGraph(diffs: ForecastDiff[]) {
     function(d) { return y(d as any) }
   )
   diffs.forEach(d => {
-    drawLine(svg, d, line, x, y)
+    drawLine(svg, d, line)
   })
 
   appendXAxis(svg, bottomEdge, x)
