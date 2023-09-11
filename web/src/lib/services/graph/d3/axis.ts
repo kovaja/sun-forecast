@@ -21,10 +21,10 @@ export function appendYGrid(svg, grid) {
     .call(grid);
 }
 
-export function appendXAxis(svg, bottomEdge: number, x) {
+export function appendXAxis(svg, bottomEdge: number, x, tickFormatFn = (d) => d) {
   svg.append("g")
     .attr("transform", "translate(0," + bottomEdge + ")")
-    .call(d3.axisBottom(x))
+    .call(d3.axisBottom(x).tickFormat(tickFormatFn))
     .selectAll("text")
     .attr("transform", "translate(-10,0)rotate(-45)")
     .style("text-anchor", "end");

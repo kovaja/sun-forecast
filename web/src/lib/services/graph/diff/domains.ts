@@ -3,7 +3,8 @@ import type { ForecastDiff } from '../../../types';
 
 export function getYDomain(diffs: ForecastDiff[]) {
   const flattenDiffs = diffs.map(d => d.diffs).flat()
-  return [d3.min(flattenDiffs), d3.max(flattenDiffs)]
+  const realDomain = [d3.min(flattenDiffs), d3.max(flattenDiffs)]
+  return [-100, 100]
 }
 export function getXDomain(diffs: ForecastDiff[]) {
   return [0, diffs[0].diffs.length -1]

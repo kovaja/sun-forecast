@@ -2,7 +2,6 @@ import * as d3 from "d3";
 import type { ForecastDiff } from '../../../types';
 import { createSvg, getContainerDimensions, throwAwayOldGraph } from '../d3/graph';
 import { createXScale, createYScale, getXDomain, getYDomain } from './domains';
-import type { D3Selection } from '../../../types.d3';
 import { appendXAxis, appendXGrid, appendYAxis, appendYGrid, createXGrid, createYGrid } from '../d3/axis';
 import { AVG_LINE_STROKE, DIFF_LINE_STROKE, MEDIAN_LINE_STROKE } from './constants';
 import { drawLine } from './line';
@@ -11,7 +10,17 @@ import { computeAverageSeries, computeMedianSeries } from './aggregateLine';
 export const DIFF_GRAPH_ROOT = 'diff-graph'
 const GRAPH_ROOT_SELECTOR = '.' + DIFF_GRAPH_ROOT
 
+/**
+ * Converts 0,1,2... to periodEnd (00:00, 00:30, 01:00, ...)
+ * @param d
+ */
+function formatTick(d: any) {
+  const hrs = d / 2;
+  const hasHalf = hrs*10 % 10 !== 0
+  const fullHr = Math.floor(hrs)
 
+  return `${String(fullHr).padStart(2, '0')}:${hasHalf ? '30' : '00'}`
+}
 
 export function plotGraph(diffs: ForecastDiff[]) {
   const graphContainer = document.querySelector(GRAPH_ROOT_SELECTOR)
@@ -50,7 +59,7 @@ export function plotGraph(diffs: ForecastDiff[]) {
       diff: d,
       line,
       stroke: DIFF_LINE_STROKE,
-      strokeWidth: 0.5
+      strokeWidth: 0.3
     })
   })
 
@@ -72,6 +81,6 @@ export function plotGraph(diffs: ForecastDiff[]) {
     strokeWidth: 2
   })
 
-  appendXAxis(svg, bottomEdge, x)
+  appendXAxis(svg, bottomEdge, x, formatTick)
   appendYAxis(svg, y)
 }
