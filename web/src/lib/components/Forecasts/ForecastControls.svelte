@@ -4,6 +4,9 @@
   import { ControlsType } from '../ControlsBar/types';
   import { createEventDispatcher, onDestroy, onMount } from 'svelte';
   import { isSmallViewport } from '../../utils/dom';
+  import { openModal } from '../../services/modalService';
+  import type { ModalResult } from '../../services/modalService';
+  import WindowSizeModal from './WindowSizeModal.svelte';
 
   export let windowFrom: string;
   export let windowTo: string;
@@ -23,7 +26,7 @@
     }
     windowLeft = new Date(wf).toLocaleString()
     windowRight = new Date(wt).toLocaleString()
-    const hrs = windowSize / 2
+    const hrs = windowSize
     readableWindowSize = (Math.floor(hrs) - hrs) === 0 ? `${hrs}.5 hrs` : `${hrs + 0.5}.0 hrs`
     recomputeControls()
   }
@@ -42,6 +45,17 @@
   function updateWindowSizeDown() {
     windowSize -= 1
     dispatchWindowChange()
+  }
+
+  function updateWindowSize(size: number) {
+    windowSize = size
+    dispatchWindowChange()
+  }
+
+  function onWindowSizeClicked() {
+    openModal(WindowSizeModal, (result: ModalResult) => {
+      updateWindowSize(result.value)
+    })
   }
 
   function moveWindowMiddleInPast() {
@@ -64,9 +78,11 @@
       },
       {
         type: ControlsType.Group,
+        centerFieldType: 'button',
+        onCenterFieldClick: () => onWindowSizeClicked(),
         label: 'Window size: ' + readableWindowSize,
         keepLabelVisible: true,
-        leftButton:{
+        leftButton: {
           sign: '-',
           onClick: () => updateWindowSizeDown()
         },

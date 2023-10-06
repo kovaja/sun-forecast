@@ -25,7 +25,13 @@
                 <button on:click={control.leftButton.onClick}>
                     {control.leftButton.sign}
                 </button>
-                <ControlsLabel keepLabelVisible={control.keepLabelVisible} label={control.label}/>
+                {#if control.centerFieldType === 'text'}
+                  <ControlsLabel keepLabelVisible={control.keepLabelVisible} label={control.label}/>
+                {:else if control.centerFieldType === 'button'}
+                  <button on:click={control.onCenterFieldClick}>
+                    {control.label}
+                  </button>
+                {/if}
                 <button on:click={control.rightButton.onClick}>
                     {control.rightButton.sign}
                 </button>

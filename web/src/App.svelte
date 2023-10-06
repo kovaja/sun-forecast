@@ -5,6 +5,7 @@
   import type { AppLink } from './lib/types';
   import Tabs from './lib/components/Tabs.svelte';
   import Diffs from './routes/Diffs.svelte';
+  import Modal from './lib/components/Modal/Modal.svelte';
 
   const links: AppLink[] = [
     {
@@ -30,10 +31,9 @@
     <div class="route-main">
       <Route path="/events" component={Events}/>
       <Route path="/diffs" component={Diffs}/>
-      <Route path="/">
-        <Forecast/>
-      </Route>
+      <Route path="/" component={Forecast}/>
     </div>
+    <Modal />
   </Router>
 </main>
 
