@@ -13,7 +13,7 @@
 
   const reFetchInterval = 5 * 60 * 1000 // every 5 minutes
   const halfHourMs = 30 * 60 * 1000
-  let windowSize = isSmallViewport() ? 6 : 12
+  let windowSize = isSmallViewport() ? 12 : 24
   let windowMiddle = new Date()
   let readableWindowSize = ''
   let windowLeft = ''

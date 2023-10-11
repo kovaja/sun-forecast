@@ -29,6 +29,7 @@
       {
         type: ControlsType.Group,
         label: `Window size: ${windowSize + 1} day(s)`,
+        centerFieldType: 'text',
         keepLabelVisible: true,
         leftButton:{
           sign: '-',
