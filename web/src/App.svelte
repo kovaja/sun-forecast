@@ -6,11 +6,16 @@
   import Tabs from './lib/components/Tabs.svelte';
   import Diffs from './routes/Diffs.svelte';
   import Modal from './lib/components/Modal/Modal.svelte';
+  import Dashboard from './routes/Dashboard.svelte';
 
   const links: AppLink[] = [
     {
       name: 'Forecast',
       route: '/'
+    },
+    {
+      name: 'Dashboard',
+      route: '/dashboard'
     },
     {
       name: 'Diffs',
@@ -31,6 +36,7 @@
     <div class="route-main">
       <Route path="/events" component={Events}/>
       <Route path="/diffs" component={Diffs}/>
+      <Route path="/dashboard" component={Dashboard}/>
       <Route path="/" component={Forecast}/>
     </div>
     <Modal />
