@@ -103,9 +103,9 @@ export function getAnimateColumns(params: Pick<ColumnParams, 'elements' | 'scale
 
     svg.selectAll('.' + SELECTOR_MAP[property])
       .transition()
-      .duration(800)
+      .duration(200)
       .attr("y", getYCoord)
       .attr("height", getHeight)
-      .delay((_, i) => i * 50)
+      .delay((_, i) => i * 20)
   }
 }

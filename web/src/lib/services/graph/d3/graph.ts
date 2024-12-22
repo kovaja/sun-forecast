@@ -19,12 +19,12 @@ export function throwAwayOldGraph(graphRoot: Element) {
   graphRoot.innerHTML = ''
 }
 
-export function getContainerDimensions(container: Element): GraphDimension {
+export function getContainerDimensions(container: Element, isGlobal: boolean): GraphDimension {
   const margin = {top: 10, left: 35, right: 5, bottom: 40};
   const rect = container.getBoundingClientRect()
 
   const width =  rect.width
-  const height = window.innerHeight - 80 + 10
+  const height = (isGlobal ? (window.innerHeight - 80) : rect.height) + 10
   const rightEdge = width - margin.left - margin.right
   const bottomEdge = height - margin.top - margin.bottom
 

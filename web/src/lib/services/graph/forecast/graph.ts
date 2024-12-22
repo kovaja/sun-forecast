@@ -10,7 +10,7 @@ import { createSvg, getContainerDimensions, throwAwayOldGraph } from '../d3/grap
 import { appendXAxis, appendXGrid, appendYAxis, appendYGrid, createXGrid, createYGrid } from '../d3/axis';
 
 export const GRAPH_ROOT = 'graph-root';
-const GRAPH_ROOT_SELECTOR = '.' + GRAPH_ROOT
+const GRAPH_ROOT_SELECTOR = (id: string) => '#' + id
 const MAX_COLUMN_PADDING = 15
 let COLUMN_PADDING = 15
 
@@ -46,8 +46,8 @@ function appendCurrentTimeIndicator(svg, x, bottomEdge) {
 
 }
 
-export function plotGraph(data: Forecast[]) {
-  const graphContainer = document.querySelector(GRAPH_ROOT_SELECTOR)
+export function plotGraph(data: Forecast[], graphContainerId: string) {
+  const graphContainer = document.querySelector(GRAPH_ROOT_SELECTOR(graphContainerId))
 
   if (!graphContainer) {
     return;
@@ -55,14 +55,20 @@ export function plotGraph(data: Forecast[]) {
 
   throwAwayOldGraph(graphContainer)
 
-  const { width, height, rightEdge, bottomEdge, margin} = getContainerDimensions(graphContainer);
+  const {
+    width,
+    height,
+    rightEdge,
+    bottomEdge,
+    margin
+  } = getContainerDimensions(graphContainer, graphContainerId === GRAPH_ROOT);
 
   const colPadScale = createColPadScale()
   COLUMN_PADDING = colPadScale(data.length)
 
   const x = createXScale(rightEdge, getXDomain(data))
   const y = createYScale(bottomEdge, getYDomain(data))
-  const svg = createSvg(GRAPH_ROOT_SELECTOR, width, height, margin)
+  const svg = createSvg(GRAPH_ROOT_SELECTOR(graphContainerId), width, height, margin)
 
   const xAxisGrid = createXGrid(x, bottomEdge, 10)
   const yAxisGrid = createYGrid(y, rightEdge, 5)

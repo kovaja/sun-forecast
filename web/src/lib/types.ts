@@ -45,3 +45,8 @@ export interface ForecastDiff {
   date: string;
   diffs: number[]
 }
+
+export interface ForecastParams {
+  from: string;
+  to: string;
+}

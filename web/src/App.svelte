@@ -48,4 +48,9 @@
     width: 100%;
     height: 100%;
   }
+
+  .route-main {
+    /* 100% - tabs height */
+    height: calc(100% - 30px);
+  }
 </style>

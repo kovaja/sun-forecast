@@ -4,10 +4,11 @@
   import type { Forecast } from '../../types';
 
   export let forecasts: Forecast[] = [];
+  export let graphContainerId: string = GRAPH_ROOT;
 
   function renderGraph(newForecasts: Forecast[] = forecasts) {
     if (newForecasts.length > 0) {
-      plotGraph(newForecasts)
+      plotGraph(newForecasts, graphContainerId)
     }
   }
 
@@ -26,12 +27,11 @@
   $: renderGraph(forecasts)
 </script>
 
-<div>
-    <div class={GRAPH_ROOT + ' graph-container'}>Loading...</div>
-</div>
+<div id={graphContainerId} class="graph-container">Loading...</div>
 
 <style>
     .graph-container {
         width: 100%;
+        flex: 1 0 auto;
     }
 </style>

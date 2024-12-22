@@ -36,7 +36,7 @@ export function plotGraph(diffs: ForecastDiff[]) {
     rightEdge,
     bottomEdge,
     margin
-  } = getContainerDimensions(graphContainer);
+  } = getContainerDimensions(graphContainer, true);
 
   const x = createXScale(rightEdge, getXDomain(diffs))
   const y = createYScale(bottomEdge, getYDomain(diffs ))

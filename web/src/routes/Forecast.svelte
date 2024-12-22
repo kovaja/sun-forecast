@@ -3,6 +3,7 @@
   import ForecastControls from '../lib/components/Forecasts/ForecastControls.svelte';
   import { fetchForecast } from '../lib/services/api/forecast.api';
   import type { Forecast } from '../lib/types';
+  import { mapWindowToForecastParams } from '../lib/utils/date.js';
 
   // triggered and initialized by controls component
   let windowSize: number;
@@ -14,7 +15,7 @@
   let forecasts: Forecast[] = [];
 
   async function fetchForecasts() {
-    const response = await fetchForecast(windowSize, windowMiddle)
+    const response = await fetchForecast(mapWindowToForecastParams(windowSize, windowMiddle))
     if (response) {
       windowFrom = response.from
       windowTo = response.to
