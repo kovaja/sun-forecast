@@ -62,7 +62,7 @@ func (repository ForecastRepository) ReadForecasts(from *time.Time, to *time.Tim
 
 	rows, err := repository.db.Query(query, from, to)
 	if err != nil {
-		return nil, utils.CustomError("Failed to read singe forecast", err)
+		return nil, utils.CustomError("Failed to read single forecast", err)
 	}
 	defer rows.Close()
 

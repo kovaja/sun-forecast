@@ -15,6 +15,7 @@ func getDbConnectionString() (string, error) {
 	pwd, err := utils.GetEnvVariable("DB_PWD")
 	dbHost, err := utils.GetEnvVariable("DB_HOST")
 	dbName, err := utils.GetEnvVariable("DB_NAME")
+	dbQuery, err := utils.GetEnvVariable("DB_QUERY")
 
 	if err != nil {
 		return "", utils.CustomError("Failed to load env variables for DB", err)
@@ -36,7 +37,11 @@ func getDbConnectionString() (string, error) {
 		return "", errors.New("Failed to load db name variable")
 	}
 
-	return fmt.Sprintf("postgres://%s:%s@%s/%s", usr, pwd, dbHost, dbName), nil
+	if dbQuery == "" {
+		return "", errors.New("Failed to load db query variable")
+	}
+
+	return fmt.Sprintf("postgres://%s:%s@%s/%s?%s", usr, pwd, dbHost, dbName, dbQuery), nil
 }
 
 func InitializeDatabase() (*sql.DB, error) {
