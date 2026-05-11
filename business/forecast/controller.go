@@ -102,6 +102,12 @@ func (ctl ForecastController) GetForecasts(fromStr string, toStr string) (*Forec
 
 	fromStart, toEnd := GetForecastsRange(*forecasts)
 
+	if fromStart == nil || toEnd == nil {
+		return &ForecastResponse{
+			Forecasts: *forecasts,
+		}, nil
+	}
+
 	return &ForecastResponse{
 		Forecasts: *forecasts,
 		From:      *fromStart,
